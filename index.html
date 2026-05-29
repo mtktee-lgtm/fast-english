@@ -753,8 +753,13 @@ function startFillMode(words) {
 }
 
 function getWrongOpts(correct, all, n) {
-  const pool = shuffle(all.filter(w => w.word !== correct.word)).slice(0, n);
-  return pool.map(w => w.word);
+  // First try from current selection, then fallback to full VOCAB
+  let pool = all.filter(w => w.word !== correct.word);
+  if (pool.length < n) {
+    const extra = VOCAB.filter(v => v.word !== correct.word && !pool.find(p => p.word === v.word));
+    pool = pool.concat(extra);
+  }
+  return shuffle(pool).slice(0, n).map(w => w.word);
 }
 
 function renderFill() {
@@ -917,7 +922,12 @@ function reStudyHard() { fcWords=shuffle(fcHard); fcIdx=0; fcFlipped=false; fcHa
 
 // ============ MATCHING ============
 function startMatchMode(words) {
-  matchWords = shuffle(words).slice(0,6);
+  let pool = [...words];
+  if (pool.length < 4) {
+    const extra = VOCAB.filter(v => !pool.find(p => p.word === v.word));
+    pool = pool.concat(shuffle(extra).slice(0, 6 - pool.length));
+  }
+  matchWords = shuffle(pool).slice(0,6);
   matchSel=null; matchDone=0;
   showScreen('s-test');
   renderMatch();
