@@ -138,6 +138,51 @@ body{font-family:'Nunito',sans-serif;background:#1a1a2e;color:#eee;min-height:10
 .wr-word{font-size:15px;font-weight:700;color:#e94560;}
 .wr-thai{font-size:13px;color:#f5a623;}
 .wr-note{font-size:12px;color:#888;margin-top:3px;}
+
+.timer-ring{position:relative;width:56px;height:56px;flex-shrink:0;}
+.timer-ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:#1a4a7a;stroke-width:4;}
+.ring-fill{fill:none;stroke:#5dde5d;stroke-width:4;stroke-linecap:round;stroke-dasharray:138;transition:stroke-dashoffset 1s linear,stroke 0.3s;}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#eee;}
+.game-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.gm-thai{font-size:24px;font-weight:800;color:#eee;}
+.gm-hint{font-size:12px;color:#888;margin-top:2px;}
+.cl-score-badge{background:#16213e;border-radius:10px;padding:8px 16px;text-align:center;}
+.cl-input-row{display:flex;gap:8px;margin-bottom:12px;}
+.cl-input-row input{flex:1;background:rgba(255,255,255,0.1);border:2px solid #0f3460;border-radius:10px;color:white;font-family:'Nunito',sans-serif;font-size:17px;font-weight:700;padding:8px 12px;outline:none;}
+.cl-input-row input:focus{border-color:#5dde5d;}
+.cl-input-row input.cl-ok{border-color:#5dde5d;background:rgba(93,222,93,0.1);}
+.cl-input-row input.cl-wrong{border-color:#e94560;animation:shk 0.3s;}
+.cl-input-row button{background:#0f3460;border:none;color:#aaa;border-radius:10px;padding:0 16px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;}
+.cl-input-row button:hover{background:#1a4a7a;color:#eee;}
+.found-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;min-height:32px;}
+.fp{border-radius:20px;padding:4px 12px;font-size:13px;font-weight:700;}
+.fp-found{background:#1a3a1a;color:#5dde5d;}
+.fp-missed{background:#3a1a1a;color:#e94560;}
+.hint-section{background:#0f3460;border-radius:10px;padding:10px 14px;margin-bottom:10px;}
+.hint-title{font-size:11px;color:#888;margin-bottom:6px;}
+.hint-row{display:flex;gap:6px;flex-wrap:wrap;}
+.hp{border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;}
+.hp-formal{background:#0c447c;color:#b5d4f4;}
+.hp-spoken{background:#633806;color:#fac775;}
+.hp-literary{background:#3c3489;color:#cecbf6;}
+.hp-strong{background:#3a1a1a;color:#e94560;}
+.hp-mild{background:#1a3a1a;color:#5dde5d;}
+.reveal-btn{width:100%;padding:10px;background:#0f3460;border:none;color:#888;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;margin-bottom:8px;}
+.reveal-btn:hover{color:#eee;}
+.cl-result-card{background:#16213e;border-radius:12px;padding:16px;margin-bottom:10px;}
+.cl-rc-thai{font-size:18px;font-weight:800;color:#eee;margin-bottom:10px;}
+.cl-rw{border-radius:8px;padding:8px 12px;margin-bottom:6px;}
+.cl-rw-found{background:#1a3a1a;}
+.cl-rw-missed{background:#3a1a1a;}
+.cl-rw-word{font-size:14px;font-weight:700;}
+.cl-rw-found .cl-rw-word{color:#5dde5d;}
+.cl-rw-missed .cl-rw-word{color:#e94560;}
+.cl-rw-note{font-size:12px;color:#888;margin-top:2px;}
+.cl-final{text-align:center;padding:20px 0;}
+.cl-final-score{font-size:48px;font-weight:800;color:#5dde5d;font-family:'Fredoka One',cursive;}
+.cl-final-label{font-size:15px;color:#888;margin-bottom:16px;}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 </style>
 </head>
 <body>
@@ -203,274 +248,375 @@ body{font-family:'Nunito',sans-serif;background:#1a1a2e;color:#eee;min-height:10
 <script>
 // ===================== DATA =====================
 const VOCAB = [
-  // ===== 1. FEELING - อารมณ์ลบ =====
-  {
-    group:"1. Feeling — ประหลาดใจ", gid:"feeling_surprise",
-    word:"astound", pos:"v", thai:"ตะลึง, ประหลาดใจมาก",
-    level:3, levelLabel:"แรงมาก",
-    sentence:"He was ___ when he found out he had won the lottery.",
-    sentenceTh:"เขาตะลึงเมื่อรู้ว่าตัวเองถูกรางวัลลอตเตอรี่",
-    note:"astound > astonish > amaze > surprise (แรงลดลง) / astounded = ตะลึงงัน ถึงกับพูดไม่ออก",
-    synonyms:["surprise","amaze","astonish","astound","startle"]
-  },
-  {
-    group:"1. Feeling — ประหลาดใจ", gid:"feeling_surprise",
-    word:"startle", pos:"v", thai:"ทำให้สะดุ้ง, ตกใจกระทันหัน",
-    level:2, levelLabel:"กลาง",
-    sentence:"The sudden noise ___ everyone in the room.",
-    sentenceTh:"เสียงดังกะทันหันทำให้ทุกคนในห้องสะดุ้งตกใจ",
-    note:"startle = ตกใจเพราะสิ่งที่เกิดขึ้นกะทันหัน (เสียง, การปรากฏตัว) / ต่างจาก surprise ที่เน้นความไม่คาดฝัน",
-    synonyms:["surprise","amaze","astonish","astound","startle"]
-  },
-  {
-    group:"1. Feeling — อารมณ์เสีย", gid:"feeling_upset",
-    word:"disconcerted", pos:"adj", thai:"ไม่สบายใจ, หงุดหงิดใจ, ถูกรบกวนจิตใจ",
-    level:2, levelLabel:"กลาง",
-    sentence:"She was ___ to discover that her name had been left off the list.",
-    sentenceTh:"เธอรู้สึกไม่สบายใจมากเมื่อพบว่าชื่อตัวเองถูกตัดออกจากรายชื่อ",
-    note:"disconcerted = รู้สึกว่าสิ่งที่เกิดขึ้นไม่ถูกต้อง/ไม่เป็นธรรม ทำให้หัวสับสน / ต่างจาก upset ที่เน้นอารมณ์เสียทั่วไป",
-    synonyms:["upset","grumpy","irritate","disconcerted"]
-  },
-  {
-    group:"1. Feeling — โกรธ", gid:"feeling_angry",
-    word:"furious", pos:"adj", thai:"โกรธจัด, เดือดดาล",
-    level:3, levelLabel:"แรงมาก",
-    sentence:"The manager was ___ when he found out that his team had missed the deadline.",
-    sentenceTh:"ผู้จัดการเดือดดาลเมื่อรู้ว่าทีมของตัวเองพลาดกำหนดส่งงาน",
-    note:"furious > irate > angry (แรงลดลง) / furious มักใช้กับสถานการณ์ที่ยิ่งใหญ่หรือร้ายแรง",
-    synonyms:["angry","irate","furious","incense","indignant","enraged"]
-  },
-  {
-    group:"1. Feeling — โกรธ", gid:"feeling_angry",
-    word:"indignant", pos:"adj", thai:"ขุ่นเคือง, โกรธเพราะรู้สึกว่าถูกอยุติธรรม",
-    level:2, levelLabel:"กลาง",
-    sentence:"She was ___ at the suggestion that she had cheated in the exam.",
-    sentenceTh:"เธอขุ่นเคืองมากที่มีคนบอกว่าเธอโกงข้อสอบ",
-    note:"indignant = โกรธเพราะรู้สึกว่าถูกปฏิบัติอย่างไม่ยุติธรรม มักใช้กับเรื่องศีลธรรมหรือความถูกผิด",
-    synonyms:["angry","irate","furious","incense","indignant","enraged"]
-  },
-  {
-    group:"1. Feeling — เกลียด", gid:"feeling_hate",
-    word:"abhor", pos:"v", thai:"รังเกียจอย่างรุนแรง, ขยะแขยง",
-    level:3, levelLabel:"แรงมาก",
-    sentence:"Most civilized people ___ any form of violence against children.",
-    sentenceTh:"คนที่มีอารยธรรมส่วนใหญ่รังเกียจความรุนแรงต่อเด็กอย่างสิ้นเชิง",
-    note:"abhor > detest > loathe > dislike (แรงลดลง) / abhor มักใช้กับสิ่งที่ขัดกับคุณธรรมหรือหลักการ",
-    synonyms:["dislike","loathe","detest","abhor","despise"]
-  },
-  {
-    group:"1. Feeling — เกลียด", gid:"feeling_hate",
-    word:"antipathy", pos:"n", thai:"ความรู้สึกเป็นปฏิปักษ์, ความเกลียดชัง",
-    level:2, levelLabel:"กลาง",
-    sentence:"There has always been a strong ___ between the two rival football clubs.",
-    sentenceTh:"มีความรู้สึกเป็นปฏิปักษ์อย่างรุนแรงระหว่างสองสโมสรฟุตบอลคู่แข่งมาโดยตลอด",
-    note:"antipathy (n) = ความรู้สึกไม่ชอบที่ฝังลึก มักเกิดจากธรรมชาติหรือประสบการณ์ / antipathetic (adj)",
-    synonyms:["dislike","loathe","detest","abhor","antipathy"]
-  },
-  // ===== RELATIONSHIP - ความสัมพันธ์ทางลบ =====
-  {
-    group:"Rel. — ทอดทิ้ง", gid:"rel_abandon",
-    word:"relinquish", pos:"v", thai:"สละ, ยกเลิกสิทธิ์อย่างเป็นทางการ",
-    level:3, levelLabel:"formal มาก",
-    sentence:"The king was forced to ___ his throne after the revolution.",
-    sentenceTh:"กษัตริย์ถูกบังคับให้สละบัลลังก์หลังการปฏิวัติ",
-    note:"relinquish = สละสิ่งที่เคยครอบครองอย่างเป็นทางการ (rights, power, claim) / ต่างจาก abandon ที่เน้นการละทิ้งอย่างกะทันหัน",
-    synonyms:["abandon","relinquish"]
-  },
-  {
-    group:"Rel. — ขมขื่น", gid:"rel_bitter",
-    word:"acrimonious", pos:"adj", thai:"เต็มไปด้วยความขมขื่น, รุนแรงในคำพูด",
-    level:3, levelLabel:"แรงมาก",
-    sentence:"The divorce proceedings became increasingly ___ as both sides refused to compromise.",
-    sentenceTh:"กระบวนการหย่าร้างยิ่งขมขื่นมากขึ้นเรื่อยๆ เมื่อทั้งสองฝ่ายปฏิเสธที่จะประนีประนอม",
-    note:"acrimonious = bitter ที่เข้มข้นกว่า มักใช้กับการโต้เถียง การหย่าร้าง หรือการเจรจาที่รุนแรง",
-    synonyms:["bitter","acrimonious"]
-  },
-  {
-    group:"Rel. — สร้างความเจ็บปวด", gid:"rel_hurt",
-    word:"afflict", pos:"v", thai:"ทำให้ทุกข์ทรมาน (มักเป็นโรคหรือปัญหาใหญ่)",
-    level:2, levelLabel:"กลาง",
-    sentence:"Millions of people around the world are ___ by hunger and poverty.",
-    sentenceTh:"คนหลายล้านคนทั่วโลกต้องทุกข์ทรมานจากความหิวโหยและความยากจน",
-    note:"afflict = ทำให้ทุกข์ทรมานอย่างต่อเนื่อง มักใช้ passive: be afflicted by/with / injure = ทำร้ายร่างกายโดยตรง",
-    synonyms:["hurt","afflict","injure"]
-  },
-  {
-    group:"Rel. — ทำให้สถานการณ์แย่ลง", gid:"rel_aggravate",
-    word:"aggravate", pos:"v", thai:"ทำให้เลวร้ายยิ่งขึ้น",
-    level:2, levelLabel:"กลาง",
-    sentence:"Scratching an insect bite will only ___ the irritation.",
-    sentenceTh:"การเกาแผลถูกแมลงกัดจะยิ่งทำให้อาการแย่ลงเท่านั้น",
-    note:"aggravate = ทำให้สิ่งที่แย่อยู่แล้วแย่ลงไปอีก / aggravation (n) / worsen = ใช้ได้ทั่วไป",
-    synonyms:["aggravate","worsen"]
-  },
-  {
-    group:"Rel. — ความโกรธเคือง", gid:"rel_animosity",
-    word:"animosity", pos:"n", thai:"ความเป็นศัตรู, ความเคียดแค้น",
-    level:2, levelLabel:"กลาง",
-    sentence:"Despite their past conflicts, there is no longer any ___ between the two nations.",
-    sentenceTh:"แม้จะมีความขัดแย้งในอดีต แต่ปัจจุบันไม่มีความเป็นศัตรูระหว่างสองชาตินั้นอีกแล้ว",
-    note:"animosity = ความเป็นศัตรูที่ฝังลึก / wrath = ความโกรธที่รุนแรงและน่ากลัว / fury = ความโกรธที่ระเบิดออกมา",
-    synonyms:["animosity","fury","wrath","hatred","anger"]
-  },
-  {
-    group:"Rel. — ทำให้สงบโดยการยอม", gid:"rel_appease",
-    word:"appease", pos:"v", thai:"ทำให้สงบ, ประนีประนอมด้วยการยอมให้",
-    level:2, levelLabel:"กลาง",
-    sentence:"The government tried to ___ the protesters by promising to review the policy.",
-    sentenceTh:"รัฐบาลพยายามทำให้ผู้ประท้วงสงบลงด้วยการสัญญาว่าจะทบทวนนโยบาย",
-    note:"appease = ยอมให้เพื่อให้อีกฝ่ายหยุดโกรธ / pacify = ทำให้สงบด้วยการปลอบโยน / มักมีความหมายเชิงลบ (ยอมแบบอ่อนแอ)",
-    synonyms:["appease","pacify"]
-  },
-  // ===== Relationship page 40 =====
-  {
-    group:"Rel. — ไม่ยอมรับความเห็นต่าง", gid:"rel_intolerant",
-    word:"insular", pos:"adj", thai:"คับแคบ, ไม่รับรู้โลกภายนอก",
-    level:2, levelLabel:"กลาง",
-    sentence:"Living in such a remote village had made him rather ___ in his views.",
-    sentenceTh:"การอาศัยอยู่ในหมู่บ้านที่โดดเดี่ยวทำให้เขามีมุมมองที่คับแคบ",
-    note:"insular = ปิดตัวเองจากแนวคิดภายนอก คล้ายเกาะ (island) / narrow-minded = ใจแคบทั่วไป / bigotry = ความลำเอียงและไม่ยอมรับ",
-    synonyms:["narrow-minded","intolerant","insular"]
-  },
-  {
-    group:"Rel. — หลอกลวง", gid:"rel_deceive",
-    word:"manipulate", pos:"v", thai:"บงการ, ชักใย, หลอกควบคุม",
-    level:2, levelLabel:"กลาง",
-    sentence:"She felt that her emotions had been ___ by the politician's speech.",
-    sentenceTh:"เธอรู้สึกว่าอารมณ์ของตัวเองถูกบงการโดยสุนทรพจน์ของนักการเมือง",
-    note:"manipulate = ควบคุมหรือมีอิทธิพลต่อผู้อื่นอย่างแยบยล / entice = ล่อใจ / deceive = หลอกให้เชื่อในสิ่งที่ผิด",
-    synonyms:["lure","allure","manipulate","entice","deceive"]
-  },
-  {
-    group:"Rel. — ความขัดแย้ง", gid:"rel_conflict",
-    word:"discord", pos:"n", thai:"ความไม่ลงรอย, ความขัดแย้ง",
-    level:2, levelLabel:"กลาง",
-    sentence:"The new policy has sown seeds of ___ within the organization.",
-    sentenceTh:"นโยบายใหม่ได้หว่านเมล็ดพันธุ์แห่งความขัดแย้งภายในองค์กร",
-    note:"discord = ความไม่กลมกลืน ทั้งในความสัมพันธ์และดนตรี / conflict = การต่อสู้หรือขัดแย้ง / feud = ความบาดหมางที่ยาวนาน",
-    synonyms:["conflict","discord","feud","dispute","enmity"]
-  },
-  // ===== Page 41 =====
-  {
-    group:"Rel. — หยุดชะงัก", gid:"rel_disrupt",
-    word:"disrupt", pos:"v", thai:"ขัดขวาง, ทำให้หยุดชะงัก",
-    level:2, levelLabel:"กลาง",
-    sentence:"The heavy snowstorm ___ flights across the entire country.",
-    sentenceTh:"พายุหิมะหนักทำให้เที่ยวบินทั่วประเทศหยุดชะงัก",
-    note:"disrupt = ขัดขวางการดำเนินของสิ่งปกติ / disruption (n) / disruptive (adj) = ที่ก่อให้เกิดการหยุดชะงัก",
-    synonyms:["disrupt"]
-  },
-  {
-    group:"Rel. — ช่องว่าง", gid:"rel_gap",
-    word:"discrepancy", pos:"n", thai:"ความไม่สอดคล้อง, ความแตกต่างที่ผิดปกติ",
-    level:3, levelLabel:"formal",
-    sentence:"There is a significant ___ between what the company claims and its actual sales figures.",
-    sentenceTh:"มีความไม่สอดคล้องอย่างมีนัยสำคัญระหว่างสิ่งที่บริษัทอ้างกับยอดขายจริง",
-    note:"discrepancy = ความต่างที่ควรเหมือนกันแต่ไม่เหมือน / gap = ช่องว่างทั่วไป",
-    synonyms:["gap","discrepancy"]
-  },
-  {
-    group:"Rel. — ย่ำแย่", gid:"rel_plight",
-    word:"plight", pos:"n", thai:"สภาพที่ย่ำแย่, ความลำบาก",
-    level:2, levelLabel:"กลาง",
-    sentence:"The documentary highlighted the ___ of refugees living in temporary camps.",
-    sentenceTh:"สารคดีได้นำเสนอสภาพที่ย่ำแย่ของผู้ลี้ภัยที่อาศัยอยู่ในค่ายชั่วคราว",
-    note:"plight (n) = สถานการณ์ที่เลวร้าย มักใช้กับกลุ่มคนที่ต้องการความช่วยเหลือ / grave (adj) = ร้ายแรง, น่าเป็นห่วง",
-    synonyms:["plight","grave","sour"]
-  },
-  {
-    group:"Rel. — ซับซ้อน", gid:"rel_complex",
-    word:"intricate", pos:"adj", thai:"ซับซ้อนละเอียดอ่อน, มีรายละเอียดมาก",
-    level:3, levelLabel:"แรงมาก",
-    sentence:"The ___ patterns on the ancient tapestry took years to weave.",
-    sentenceTh:"ลวดลายที่ซับซ้อนละเอียดอ่อนบนผ้าทอโบราณใช้เวลาหลายปีในการทอ",
-    note:"intricate > complicated > complex (ลำดับจากละเอียดอ่อนมากสุดไปทั่วไป) / intricate เน้นรายละเอียดที่พันกัน",
-    synonyms:["complex","complicated","intricate"]
-  },
-  {
-    group:"Rel. — ทำให้เสียหาย", gid:"rel_impair",
-    word:"impair", pos:"v", thai:"บั่นทอน, ทำให้เสื่อมลง",
-    level:2, levelLabel:"กลาง",
-    sentence:"Drinking alcohol can seriously ___ your ability to drive.",
-    sentenceTh:"การดื่มแอลกอฮอล์อาจบั่นทอนความสามารถในการขับรถของคุณอย่างร้ายแรง",
-    note:"impair = ลดความสามารถหรือคุณภาพ มักใช้กับ vision/hearing/judgment / mar = ทำให้เสียความงาม / spoil = ทำให้เสียทั้งหมด",
-    synonyms:["impair","mar","spoil"]
-  },
-  {
-    group:"Rel. — ท่าทีเฉยเมย", gid:"rel_indifferent",
-    word:"aloof", pos:"adj", thai:"ห่างเหิน, ไม่สนใจผู้อื่น",
-    level:2, levelLabel:"กลาง",
-    sentence:"Despite being the CEO, she remained ___ from office politics.",
-    sentenceTh:"แม้จะเป็น CEO แต่เธอยังคงวางตัวห่างเหินจากการเมืองในออฟฟิศ",
-    note:"aloof = เจตนาห่างตัวเองจากผู้อื่น / indifferent = ไม่สนใจเลย / apathetic = ไม่มีความรู้สึกหรือพลังงาน / equanimous = สงบ ไม่หวั่นไหว",
-    synonyms:["indifferent","aloof","apathetic","callous","equanimous"]
-  },
-  // ===== Page 42 =====
-  {
-    group:"Rel. — เลื่อน", gid:"rel_postpone",
-    word:"defer", pos:"v", thai:"เลื่อนออกไป (มักเพื่อไตร่ตรอง)",
-    level:2, levelLabel:"formal",
-    sentence:"The committee decided to ___ the final decision until more information was available.",
-    sentenceTh:"คณะกรรมการตัดสินใจเลื่อนการตัดสินใจขั้นสุดท้ายออกไปจนกว่าจะมีข้อมูลเพิ่มเติม",
-    note:"defer = เลื่อนออกไปอย่างเป็นทางการ / postpone = เลื่อนไปเวลาที่กำหนดใหม่ / put off = ภาษาพูด / call off = ยกเลิก",
-    synonyms:["postpone","put off","call off","delay","defer"]
-  },
-  {
-    group:"Rel. — ห้าม", gid:"rel_prohibit",
-    word:"inhibit", pos:"v", thai:"ยับยั้ง, ขัดขวางการพัฒนา",
-    level:2, levelLabel:"กลาง",
-    sentence:"Fear of failure can ___ creativity and prevent people from taking risks.",
-    sentenceTh:"ความกลัวความล้มเหลวสามารถยับยั้งความคิดสร้างสรรค์และขัดขวางไม่ให้คนกล้าเสี่ยง",
-    note:"inhibit = ยับยั้ง/ชะลอจากภายใน / prohibit = ห้ามอย่างเป็นทางการ (กฎหมาย) / forbid = ห้ามอย่างเด็ดขาด",
-    synonyms:["prohibit","inhibit","forbid"]
-  },
-  {
-    group:"Rel. — ทะเลาะ", gid:"rel_quarrel",
-    word:"bicker", pos:"v", thai:"เถียงกันเรื่องเล็กน้อย, ทะเลาะเบาะแว้ง",
-    level:1, levelLabel:"เบา",
-    sentence:"The children kept ___ over whose turn it was to use the computer.",
-    sentenceTh:"เด็กๆ ทะเลาะเบาะแว้งกันเรื่องถึงตาใครใช้คอมพิวเตอร์",
-    note:"bicker = เถียงเรื่องไม่สำคัญ / quarrel = ทะเลาะหนักกว่า / dispute = โต้แย้งอย่างเป็นทางการ",
-    synonyms:["quarrel","bicker","dispute"]
-  },
-  {
-    group:"Rel. — ปฏิเสธ", gid:"rel_deny",
-    word:"reject", pos:"v", thai:"ปฏิเสธ, ไม่รับ",
-    level:2, levelLabel:"กลาง",
-    sentence:"The publisher ___ her manuscript three times before finally accepting it.",
-    sentenceTh:"สำนักพิมพ์ปฏิเสธต้นฉบับของเธอถึงสามครั้งก่อนที่จะยอมรับในที่สุด",
-    note:"reject = ปฏิเสธอย่างชัดเจน / refuse = ปฏิเสธที่จะทำ / deny = ปฏิเสธว่าไม่จริง",
-    synonyms:["deny","reject","refuse"]
-  },
-  {
-    group:"Rel. — ยุ่งเกี่ยวกับ", gid:"rel_interfere",
-    word:"tamper with", pos:"v", thai:"แก้ไขหรือยุ่งเกี่ยวโดยไม่ได้รับอนุญาต",
-    level:2, levelLabel:"กลาง",
-    sentence:"Someone had ___ the evidence before the police arrived.",
-    sentenceTh:"มีคนบางคนแก้ไขหลักฐานก่อนที่ตำรวจจะมาถึง",
-    note:"tamper with = ยุ่งโดยไม่มีสิทธิ์ มักทำให้เสียหาย / interfere with = ขัดขวางหรือยุ่งเกินไป",
-    synonyms:["interfere with","tamper with"]
-  },
-  // ===== Page 43 =====
-  {
-    group:"Rel. — ขอบ", gid:"rel_edge",
-    word:"brink", pos:"n", thai:"ขอบ (ของสถานการณ์วิกฤต)",
-    level:2, levelLabel:"กลาง",
-    sentence:"The company was on the ___ of bankruptcy when the new investor stepped in.",
-    sentenceTh:"บริษัทกำลังอยู่บนขอบเหวของการล้มละลายเมื่อนักลงทุนรายใหม่เข้ามา",
-    note:"brink = ขอบของสถานการณ์ที่น่ากลัว เช่น on the brink of war/disaster / verge = ใกล้จะเกิดขึ้น / edge = ขอบทางกายภาพ",
-    synonyms:["edge","brink","verge"]
-  },
-  {
-    group:"Rel. — ยึดมั่น", gid:"rel_cling",
-    word:"adhere to", pos:"v", thai:"ยึดมั่นใน (กฎ, หลักการ)",
-    level:2, levelLabel:"formal",
-    sentence:"All members are expected to ___ the code of conduct at all times.",
-    sentenceTh:"สมาชิกทุกคนคาดว่าจะต้องยึดมั่นในประมวลจริยธรรมตลอดเวลา",
-    note:"adhere to = ยึดมั่นในกฎหรือหลักการ / cling to = ยึดติดกับสิ่งที่ผ่านไปแล้ว / attach to = ผูกพันกับ",
-    synonyms:["attach to","cling to","adhere to"]
-  },
+  // ===== 1. FEELING — ประหลาดใจ =====
+  {group:"1. Feeling — ประหลาดใจ",gid:"f_surprise",word:"surprise",pos:"v/n",thai:"ประหลาดใจ (ทั่วไป)",level:1,levelLabel:"เบา",
+   sentence:"I was ___ at the news — no one had told me about the promotion.",
+   sentenceTh:"ฉันประหลาดใจกับข่าวนั้น — ไม่มีใครบอกฉันเรื่องการเลื่อนตำแหน่งเลย",
+   note:"ใช้ได้ทุกบริบท เป็น base word ของหมวดนี้",synonyms:["surprise","amaze","astonish","astound","startle","puzzle","shock"]},
+  {group:"1. Feeling — ประหลาดใจ",gid:"f_surprise",word:"amaze",pos:"v",thai:"ประหลาดใจจนชื่นชม",level:2,levelLabel:"กลาง",
+   sentence:"The young pianist ___ the audience with her flawless performance.",
+   sentenceTh:"นักเปียโนสาวทำให้ผู้ชมทึ่งด้วยการแสดงที่สมบูรณ์แบบ",
+   note:"amazed = ประหลาดใจในเชิงชื่นชม / amazing = น่าทึ่ง",synonyms:["surprise","amaze","astonish","astound","startle"]},
+  {group:"1. Feeling — ประหลาดใจ",gid:"f_surprise",word:"astonish",pos:"v",thai:"ทำให้ตกใจ จนแทบไม่เชื่อ",level:2,levelLabel:"กลาง",
+   sentence:"It ___ me that anyone could eat that much in one sitting.",
+   sentenceTh:"มันทำให้ฉันตกใจที่มีคนสามารถกินได้มากขนาดนั้นในมื้อเดียว",
+   note:"astonishment (n) / astonishing (adj) — แรงกว่า amaze เล็กน้อย",synonyms:["surprise","amaze","astonish","astound","startle"]},
+  {group:"1. Feeling — ประหลาดใจ",gid:"f_surprise",word:"astound",pos:"v",thai:"ตะลึงงัน พูดไม่ออก",level:3,levelLabel:"แรงมาก",
+   sentence:"The scientist was ___ to discover that the ancient fossil was over 500 million years old.",
+   sentenceTh:"นักวิทยาศาสตร์ตะลึงงันเมื่อพบว่าฟอสซิลโบราณนั้นมีอายุกว่า 500 ล้านปี",
+   note:"แรงที่สุดในกลุ่ม — astounding = น่าตะลึง / astounded = ตะลึงงันจนพูดไม่ออก",synonyms:["surprise","amaze","astonish","astound","startle"]},
+  {group:"1. Feeling — ประหลาดใจ",gid:"f_surprise",word:"startle",pos:"v",thai:"ทำให้สะดุ้ง ตกใจกะทันหัน",level:2,levelLabel:"กลาง",
+   sentence:"The sudden sound of the alarm ___ everyone in the quiet library.",
+   sentenceTh:"เสียงสัญญาณเตือนที่ดังกะทันหันทำให้ทุกคนในห้องสมุดเงียบสะดุ้งตกใจ",
+   note:"เน้นการตกใจกะทันหันจากสิ่งภายนอก เช่น เสียง การปรากฏตัว",synonyms:["surprise","amaze","astonish","astound","startle"]},
+  {group:"1. Feeling — ประหลาดใจ",gid:"f_surprise",word:"puzzle",pos:"v/n",thai:"งุนงง ไม่เข้าใจ",level:1,levelLabel:"เบา",
+   sentence:"His strange behaviour completely ___ his colleagues — no one knew what he was thinking.",
+   sentenceTh:"พฤติกรรมแปลกๆ ของเขาทำให้เพื่อนร่วมงานงุนงงโดยสิ้นเชิง",
+   note:"puzzle = งุนงงเพราะหาเหตุผลไม่ได้ / puzzled (adj) = สับสนงุนงง",synonyms:["puzzle","confused","baffled"]},
+
+  // ===== 1. FEELING — อารมณ์เสีย =====
+  {group:"1. Feeling — อารมณ์เสีย",gid:"f_upset",word:"upset",pos:"v/n",thai:"อารมณ์เสีย หงุดหงิด รบกวนจิตใจ",level:1,levelLabel:"เบา",
+   sentence:"Don't ___ yourself over small problems that you can't control.",
+   sentenceTh:"อย่าเสียอารมณ์กับปัญหาเล็กน้อยที่คุณควบคุมไม่ได้",
+   note:"ทั่วไปที่สุดในกลุ่ม / upset (n) = ความวุ่นวาย ความไม่คาดฝัน",synonyms:["upset","grumpy","irritate","disconcerted"]},
+  {group:"1. Feeling — อารมณ์เสีย",gid:"f_upset",word:"grumpy",pos:"adj",thai:"บ่น ขี้บ่น อารมณ์ไม่ดี",level:1,levelLabel:"เบา",
+   sentence:"He gets very ___ when he hasn't had enough sleep.",
+   sentenceTh:"เขาจะอารมณ์ไม่ดีมากเมื่อนอนหลับไม่เพียงพอ",
+   note:"grumpy = ขี้บ่นชั่วคราว ไม่ได้โกรธรุนแรง มักใช้ในภาษาพูด",synonyms:["upset","grumpy","irritate","disconcerted"]},
+  {group:"1. Feeling — อารมณ์เสีย",gid:"f_upset",word:"irritate",pos:"v",thai:"ทำให้ระคายเคือง รำคาญ",level:2,levelLabel:"กลาง",
+   sentence:"The constant noise from the construction site ___ the office workers.",
+   sentenceTh:"เสียงดังต่อเนื่องจากไซต์ก่อสร้างทำให้พนักงานออฟฟิศรำคาญ",
+   note:"irritation (n) / irritating (adj) — ใช้ได้กับทั้งร่างกายและอารมณ์",synonyms:["upset","grumpy","irritate","disconcerted"]},
+  {group:"1. Feeling — อารมณ์เสีย",gid:"f_upset",word:"disconcerted",pos:"adj",thai:"ไม่สบายใจ หัวสับสน ถูกรบกวนจิตใจ",level:2,levelLabel:"กลาง",
+   sentence:"She was ___ to find that her name had been removed from the invitation list.",
+   sentenceTh:"เธอรู้สึกไม่สบายใจเมื่อพบว่าชื่อตัวเองถูกลบออกจากรายชื่อคนรับเชิญ",
+   note:"disconcerted = รู้สึกว่าสิ่งที่เกิดขึ้นไม่ถูกต้อง ทำให้หัวสับสน มักใช้ passive",synonyms:["upset","disconcerted","unsettled"]},
+
+  // ===== 1. FEELING — โกรธ =====
+  {group:"1. Feeling — โกรธ",gid:"f_angry",word:"angry",pos:"adj",thai:"โกรธ (ทั่วไป)",level:1,levelLabel:"เบา",
+   sentence:"She was ___ when she found out that someone had taken credit for her work.",
+   sentenceTh:"เธอโกรธเมื่อพบว่ามีคนแย่งเครดิตงานของเธอ",
+   note:"base word / anger (n) / angered (adj)",synonyms:["angry","irate","furious","indignant","incense","enraged","wrath"]},
+  {group:"1. Feeling — โกรธ",gid:"f_angry",word:"furious",pos:"adj",thai:"เดือดดาล โกรธจัด",level:3,levelLabel:"แรงมาก",
+   sentence:"The director was ___ when he discovered that the entire budget had been wasted.",
+   sentenceTh:"ผู้อำนวยการเดือดดาลเมื่อพบว่างบประมาณทั้งหมดถูกใช้สูญเปล่า",
+   note:"fury (n) = ความโกรธรุนแรง / furious > irate > angry",synonyms:["angry","irate","furious","indignant","enraged"]},
+  {group:"1. Feeling — โกรธ",gid:"f_angry",word:"irate",pos:"adj",thai:"โกรธมาก (มักใช้กับลูกค้า/ผู้บริโภค)",level:2,levelLabel:"กลาง",
+   sentence:"Several ___ customers called the company to complain about the defective products.",
+   sentenceTh:"ลูกค้าที่โกรธหลายคนโทรมาร้องเรียนบริษัทเรื่องสินค้าที่บกพร่อง",
+   note:"มักใช้ในบริบทธุรกิจ/ทางการ — irate customer เป็น collocation ที่นิยม",synonyms:["angry","irate","furious"]},
+  {group:"1. Feeling — โกรธ",gid:"f_angry",word:"indignant",pos:"adj",thai:"ขุ่นเคือง โกรธเพราะรู้สึกว่าถูกอยุติธรรม",level:2,levelLabel:"กลาง",
+   sentence:"The employees were ___ at the suggestion that they had been stealing from the company.",
+   sentenceTh:"พนักงานขุ่นเคืองกับข้อเสนอแนะที่ว่าพวกเขาขโมยของจากบริษัท",
+   note:"เน้นความรู้สึกว่าไม่ยุติธรรม มักเกี่ยวกับศีลธรรมหรือความถูกผิด",synonyms:["indignant","incense","enraged"]},
+  {group:"1. Feeling — โกรธ",gid:"f_angry",word:"incense",pos:"v",thai:"จุดไฟโกรธ ทำให้โกรธมาก",level:3,levelLabel:"แรงมาก",
+   sentence:"The politician's dismissive comments ___ the local community.",
+   sentenceTh:"คำพูดที่ไม่ให้ความสำคัญของนักการเมืองจุดไฟโกรธในชุมชนท้องถิ่น",
+   note:"incense (v) ≠ incense (n=ธูป) / incensed (adj) = โกรธมาก",synonyms:["incense","enrage","infuriate"]},
+  {group:"1. Feeling — โกรธ",gid:"f_angry",word:"enraged",pos:"adj",thai:"โกรธจนควบคุมตัวไม่ได้",level:3,levelLabel:"แรงมาก",
+   sentence:"The ___ bull charged at everyone who entered the field.",
+   sentenceTh:"วัวที่โกรธจัดพุ่งเข้าใส่ทุกคนที่เข้ามาในทุ่งนา",
+   note:"enrage (v) = ทำให้โกรธจัด / enraged = สภาพที่โกรธถึงขีดสุด",synonyms:["enraged","furious","incensed"]},
+  {group:"1. Feeling — โกรธ",gid:"f_angry",word:"wrath",pos:"n",thai:"ความโกรธอย่างรุนแรงน่ากลัว",level:3,levelLabel:"literary",
+   sentence:"The workers feared the ___ of their strict supervisor if they made any mistakes.",
+   sentenceTh:"คนงานกลัวความโกรธของหัวหน้าที่เข้มงวดหากทำผิดพลาด",
+   note:"wrath = ความโกรธที่ยิ่งใหญ่ น่าเกรงขาม มักใช้ในบริบท literary หรือศาสนา",synonyms:["wrath","fury","rage"]},
+
+  // ===== 1. FEELING — เกลียด =====
+  {group:"1. Feeling — เกลียด",gid:"f_hate",word:"loathe",pos:"v",thai:"รังเกียจ ไม่ทนได้",level:2,levelLabel:"แรง",
+   sentence:"She ___ having to attend boring meetings that could have been emails.",
+   sentenceTh:"เธอรังเกียจการต้องเข้าร่วมประชุมน่าเบื่อที่ควรจะส่งอีเมลแทนได้",
+   note:"มักใช้กับสิ่งของ นิสัย หรือกิจกรรม / loathing (n) = ความรังเกียจ",synonyms:["dislike","loathe","detest","abhor","despise","averse","oppose","antipathy","despicable"]},
+  {group:"1. Feeling — เกลียด",gid:"f_hate",word:"abhor",pos:"v",thai:"รังเกียจอย่างรุนแรง (เรื่องศีลธรรม)",level:3,levelLabel:"แรงมาก",
+   sentence:"Most people ___ any form of cruelty towards animals or children.",
+   sentenceTh:"คนส่วนใหญ่รังเกียจความโหดร้ายต่อสัตว์หรือเด็กอย่างสิ้นเชิง",
+   note:"abhorrence (n) / abhorrent (adj) — มักใช้กับสิ่งที่ขัดกับหลักศีลธรรม",synonyms:["loathe","abhor","detest","despise"]},
+  {group:"1. Feeling — เกลียด",gid:"f_hate",word:"averse",pos:"adj",thai:"ไม่ชอบ ไม่เต็มใจ",level:1,levelLabel:"เบา",
+   sentence:"He is not ___ to taking risks if the potential reward is high enough.",
+   sentenceTh:"เขาไม่ได้ไม่ชอบการเสี่ยงหากผลตอบแทนที่เป็นไปได้สูงพอ",
+   note:"averse to sth = ไม่ชอบสิ่งนั้น / aversion (n) = ความไม่ชอบ มักใช้ในภาษาทางการ",synonyms:["averse","dislike","opposed"]},
+  {group:"1. Feeling — เกลียด",gid:"f_hate",word:"detest",pos:"v",thai:"เกลียดชัง",level:3,levelLabel:"แรงมาก",
+   sentence:"I ___ people who bully others just because they are in a position of power.",
+   sentenceTh:"ฉันเกลียดชังคนที่รังแกผู้อื่นเพียงเพราะตัวเองมีอำนาจ",
+   note:"แรงกว่า dislike มาก ใช้ได้กับทั้งคนและพฤติกรรม",synonyms:["dislike","loathe","detest","abhor","despise"]},
+  {group:"1. Feeling — เกลียด",gid:"f_hate",word:"antipathy",pos:"n",thai:"ความรู้สึกเป็นปฏิปักษ์ที่ฝังลึก",level:2,levelLabel:"formal",
+   sentence:"There has always been a deep ___ between the two rival political parties.",
+   sentenceTh:"มีความรู้สึกเป็นปฏิปักษ์อย่างลึกซึ้งระหว่างสองพรรคการเมืองคู่แข่งมาโดยตลอด",
+   note:"antipathy (n) / antipathetic (adj) — ความรู้สึกไม่ชอบที่ฝังลึก ไม่ใช่แค่ชั่วคราว",synonyms:["antipathy","hostility","animosity","enmity"]},
+  {group:"1. Feeling — เกลียด",gid:"f_hate",word:"despicable",pos:"adj",thai:"น่าดูถูก น่าชิงชัง",level:3,levelLabel:"แรงมาก",
+   sentence:"It is quite ___ of anyone to lie to their own family for personal gain.",
+   sentenceTh:"มันน่าชิงชังมากที่ใครก็ตามจะโกหกครอบครัวตัวเองเพื่อผลประโยชน์ส่วนตัว",
+   note:"despicable = น่าดูถูก น่าชิงชัง / despise (v) = ดูถูก / opposed (adj) = ต่อต้าน",synonyms:["despicable","contemptible","loathsome"]},
+
+  // ===== RELATIONSHIP — ทอดทิ้ง =====
+  {group:"Rel. — ทอดทิ้ง",gid:"rel_abandon",word:"abandon",pos:"v",thai:"ละทิ้ง ทอดทิ้ง",level:1,levelLabel:"ทั่วไป",
+   sentence:"He was forced to ___ his car on the motorway when it broke down in the storm.",
+   sentenceTh:"เขาถูกบังคับให้ทิ้งรถบนทางด่วนเมื่อรถพังในพายุ",
+   note:"abandonment (n) / ใช้ได้กับคน สถานที่ แผนการ",synonyms:["abandon","relinquish"]},
+  {group:"Rel. — ทอดทิ้ง",gid:"rel_abandon",word:"relinquish",pos:"v",thai:"สละสิทธิ์อย่างเป็นทางการ",level:3,levelLabel:"formal",
+   sentence:"After losing the election, he had to ___ his position as party leader.",
+   sentenceTh:"หลังแพ้การเลือกตั้ง เขาต้องสละตำแหน่งหัวหน้าพรรค",
+   note:"ใช้กับ rights/power/control/claim เท่านั้น — เป็นทางการกว่า abandon มาก",synonyms:["abandon","relinquish","give up"]},
+
+  // ===== RELATIONSHIP — ขมขื่น =====
+  {group:"Rel. — ขมขื่น",gid:"rel_bitter",word:"bitter",pos:"adj",thai:"ขมขื่น เจ็บปวดใจ",level:1,levelLabel:"ทั่วไป",
+   sentence:"He felt ___ about being passed over for promotion despite his years of service.",
+   sentenceTh:"เขารู้สึกขมขื่นที่ถูกข้ามไม่ได้รับการเลื่อนตำแหน่งทั้งที่ทำงานมาหลายปี",
+   note:"bitter (adj) / bitterness (n) — ใช้ได้ทั้งรสชาติและความรู้สึก",synonyms:["bitter","acrimonious"]},
+  {group:"Rel. — ขมขื่น",gid:"rel_bitter",word:"acrimonious",pos:"adj",thai:"เต็มไปด้วยความขมขื่นรุนแรง",level:3,levelLabel:"formal/แรงมาก",
+   sentence:"Their ___ divorce lasted three years and damaged everyone involved.",
+   sentenceTh:"การหย่าร้างที่เต็มไปด้วยความขมขื่นของพวกเขากินเวลาสามปีและทำลายทุกคนที่เกี่ยวข้อง",
+   note:"acrimonious = bitter ที่เข้มข้นมาก มักใช้กับ divorce/debate/dispute",synonyms:["bitter","acrimonious"]},
+
+  // ===== RELATIONSHIP — สร้างความเจ็บปวด =====
+  {group:"Rel. — สร้างความเจ็บปวด",gid:"rel_hurt",word:"hurt",pos:"v",thai:"ทำให้เจ็บปวด (กายหรือใจ)",level:1,levelLabel:"ทั่วไป",
+   sentence:"His harsh words ___ her deeply even though he apologised later.",
+   sentenceTh:"คำพูดรุนแรงของเขาทำให้เธอเจ็บปวดใจมากแม้ว่าเขาจะขอโทษในภายหลัง",
+   note:"base word / hurt = เจ็บทั้งกายและใจ",synonyms:["hurt","afflict","injure"]},
+  {group:"Rel. — สร้างความเจ็บปวด",gid:"rel_hurt",word:"afflict",pos:"v",thai:"ทำให้ทุกข์ทรมานอย่างต่อเนื่อง",level:2,levelLabel:"formal",
+   sentence:"Millions of people worldwide are ___ by chronic pain that disrupts their daily lives.",
+   sentenceTh:"คนหลายล้านคนทั่วโลกต้องทุกข์ทรมานจากความเจ็บปวดเรื้อรังที่ขัดขวางชีวิตประจำวัน",
+   note:"affliction (n) / be afflicted by/with — มักใช้ passive กับโรคหรือปัญหาใหญ่",synonyms:["hurt","afflict","injure"]},
+  {group:"Rel. — สร้างความเจ็บปวด",gid:"rel_hurt",word:"injure",pos:"v",thai:"ทำให้บาดเจ็บทางร่างกาย",level:1,levelLabel:"ทั่วไป",
+   sentence:"Three players were ___ during the match and had to leave the field.",
+   sentenceTh:"นักกีฬาสามคนได้รับบาดเจ็บระหว่างการแข่งขันและต้องออกจากสนาม",
+   note:"injury (n) — เน้นการบาดเจ็บทางร่างกาย ต่างจาก hurt ที่รวมทั้งกายและใจ",synonyms:["hurt","injure","wound"]},
+
+  // ===== RELATIONSHIP — ทำให้แย่ลง =====
+  {group:"Rel. — ทำให้สถานการณ์แย่ลง",gid:"rel_aggravate",word:"aggravate",pos:"v",thai:"ทำให้เลวร้ายยิ่งขึ้น",level:2,levelLabel:"formal",
+   sentence:"Continuing to work without rest will only ___ your back injury.",
+   sentenceTh:"การทำงานต่อไปโดยไม่พักจะยิ่งทำให้อาการบาดเจ็บหลังของคุณเลวร้ายลง",
+   note:"aggravation (n) / worsen = ใช้ได้ทั่วไปกว่า / aggravate มักใช้กับปัญหาที่มีอยู่แล้ว",synonyms:["aggravate","worsen","exacerbate"]},
+
+  // ===== RELATIONSHIP — ความโกรธเคือง =====
+  {group:"Rel. — ความโกรธเคือง",gid:"rel_animosity",word:"animosity",pos:"n",thai:"ความเป็นศัตรู ความเคียดแค้น",level:2,levelLabel:"formal",
+   sentence:"Despite the end of the war, deep ___ between the two nations persisted for decades.",
+   sentenceTh:"แม้สงครามจะสิ้นสุดลง แต่ความเป็นศัตรูที่ลึกซึ้งระหว่างสองชาติยังคงอยู่นานหลายสิบปี",
+   note:"animosity ≈ enmity ≈ hostility — ทั้งสามแปลว่าความเป็นศัตรู",synonyms:["animosity","fury","wrath","hatred","anger","enmity","hostility"]},
+  {group:"Rel. — ความโกรธเคือง",gid:"rel_animosity",word:"hatred",pos:"n",thai:"ความเกลียดชัง",level:3,levelLabel:"แรงมาก",
+   sentence:"His ___ of corruption drove him to expose the truth despite the personal risks.",
+   sentenceTh:"ความเกลียดชังการทุจริตของเขาผลักดันให้เขาเปิดเผยความจริงแม้จะเสี่ยงภัยส่วนตัว",
+   note:"hatred (n) = ความเกลียดชัง / hate (v) = เกลียด",synonyms:["animosity","hatred","wrath","fury"]},
+  {group:"Rel. — ความโกรธเคือง",gid:"rel_animosity",word:"incensed",pos:"adj",thai:"โกรธมากจนเกือบควบคุมไม่ได้",level:3,levelLabel:"แรงมาก",
+   sentence:"The local residents were ___ by the government's decision to build a highway through their village.",
+   sentenceTh:"ชาวบ้านในพื้นที่โกรธมากกับการตัดสินใจของรัฐบาลที่จะสร้างทางหลวงผ่านหมู่บ้านของพวกเขา",
+   note:"incensed = โกรธมาก / incense (v) = ทำให้โกรธมาก",synonyms:["incensed","enraged","furious","irate"]},
+  {group:"Rel. — ความโกรธเคือง",gid:"rel_animosity",word:"indignant",pos:"adj",thai:"ขุ่นเคืองเพราะรู้สึกไม่ยุติธรรม",level:2,levelLabel:"formal",
+   sentence:"She was ___ at being accused of something she had not done.",
+   sentenceTh:"เธอขุ่นเคืองที่ถูกกล่าวหาในสิ่งที่ตัวเองไม่ได้ทำ",
+   note:"มักใช้กับความรู้สึกว่าถูกปฏิบัติอย่างไม่ยุติธรรมหรือดูถูก",synonyms:["indignant","irate","enraged"]},
+
+  // ===== RELATIONSHIP — ทำให้สงบ =====
+  {group:"Rel. — ทำให้สงบโดยการยอม",gid:"rel_appease",word:"appease",pos:"v",thai:"ทำให้สงบด้วยการยอมให้",level:2,levelLabel:"formal",
+   sentence:"The government tried to ___ protesters by promising reforms, but they refused to leave.",
+   sentenceTh:"รัฐบาลพยายามทำให้ผู้ประท้วงสงบลงด้วยการสัญญาปฏิรูป แต่พวกเขาปฏิเสธที่จะออกไป",
+   note:"appeasement (n) — มักมีความหมายเชิงลบ (ยอมแบบอ่อนแอ) / pacify เป็นกลางกว่า",synonyms:["appease","pacify","placate","mollify"]},
+  {group:"Rel. — ทำให้สงบโดยการยอม",gid:"rel_appease",word:"pacify",pos:"v",thai:"ทำให้สงบลง ปลอบโยน",level:2,levelLabel:"กลาง",
+   sentence:"The mother tried to ___ her crying child with a toy.",
+   sentenceTh:"แม่พยายามปลอบโยนลูกที่ร้องไห้ด้วยของเล่น",
+   note:"pacify = ทำให้สงบด้วยการปลอบโยน / สงบกว่า appease",synonyms:["appease","pacify","soothe","calm"]},
+
+  // ===== PAGE 40 — ไม่ยอมรับ =====
+  {group:"Rel. — ไม่ยอมรับความเห็นต่าง",gid:"rel_intolerant",word:"narrow-minded",pos:"adj",thai:"ใจแคบ ไม่ยอมรับความคิดอื่น",level:1,levelLabel:"ทั่วไป",
+   sentence:"A ___ manager who refuses to consider new ideas will quickly lose talented staff.",
+   sentenceTh:"ผู้จัดการใจแคบที่ปฏิเสธที่จะพิจารณาแนวคิดใหม่จะสูญเสียพนักงานที่มีความสามารถอย่างรวดเร็ว",
+   note:"narrow-minded ↔ open-minded / bigotry = ความลำเอียงและไม่ยอมรับอย่างรุนแรง",synonyms:["narrow-minded","intolerant","bigoted","insular"]},
+  {group:"Rel. — ไม่ยอมรับความเห็นต่าง",gid:"rel_intolerant",word:"intolerant",pos:"adj",thai:"ไม่อดทน ไม่ยอมรับความแตกต่าง",level:2,levelLabel:"กลาง",
+   sentence:"A society that is ___ of different opinions will struggle to grow and adapt.",
+   sentenceTh:"สังคมที่ไม่ยอมรับความคิดเห็นที่แตกต่างจะต้องดิ้นรนในการเติบโตและปรับตัว",
+   note:"intolerant = ไม่ยอมรับ / intolerance (n) / ↔ tolerant",synonyms:["narrow-minded","intolerant","insular","unbearable"]},
+  {group:"Rel. — ไม่ยอมรับความเห็นต่าง",gid:"rel_intolerant",word:"insular",pos:"adj",thai:"คับแคบ ปิดตัวจากโลกภายนอก",level:2,levelLabel:"formal",
+   sentence:"Growing up in an isolated community can make people very ___ in their thinking.",
+   sentenceTh:"การเติบโตในชุมชนที่โดดเดี่ยวอาจทำให้คนมีความคิดที่คับแคบมาก",
+   note:"insular มาจาก island — ปิดตัวเหมือนเกาะ / insurmountable = เอาชนะไม่ได้",synonyms:["insular","narrow-minded","provincial"]},
+
+  // ===== PAGE 40 — หลอกลวง =====
+  {group:"Rel. — หลอกลวง",gid:"rel_deceive",word:"lure",pos:"v",thai:"ล่อ ดึงดูดด้วยสิ่งล่อใจ",level:2,levelLabel:"กลาง",
+   sentence:"The company ___ customers with low prices but charged hidden fees later.",
+   sentenceTh:"บริษัทล่อลูกค้าด้วยราคาต่ำแต่เก็บค่าธรรมเนียมแอบแฝงในภายหลัง",
+   note:"lure = ล่อด้วยสิ่งล่อใจ / allure (v) = ดึงดูดอย่างมีเสน่ห์",synonyms:["lure","allure","entice","manipulate","deceive"]},
+  {group:"Rel. — หลอกลวง",gid:"rel_deceive",word:"manipulate",pos:"v",thai:"บงการ ชักใยอย่างแยบยล",level:2,levelLabel:"กลาง",
+   sentence:"The con artist ___ his victims into handing over their life savings.",
+   sentenceTh:"นักต้มตุ๋นบงการเหยื่อของเขาให้มอบเงินออมทั้งชีวิตให้",
+   note:"manipulation (n) / manipulative (adj) — ควบคุมผู้อื่นอย่างแยบยลเพื่อประโยชน์ตัวเอง",synonyms:["manipulate","maneuver","entice","deceive","lure"]},
+  {group:"Rel. — หลอกลวง",gid:"rel_deceive",word:"entice",pos:"v",thai:"ล่อใจ ชักจูง",level:2,levelLabel:"กลาง",
+   sentence:"The school tries to ___ more students into studying science with scholarships.",
+   sentenceTh:"โรงเรียนพยายามชักจูงนักเรียนให้เรียนวิทยาศาสตร์มากขึ้นด้วยทุนการศึกษา",
+   note:"enticement (n) / entice ไม่จำเป็นต้องมีเจตนาร้าย ต่างจาก manipulate",synonyms:["entice","lure","allure","tempt"]},
+  {group:"Rel. — หลอกลวง",gid:"rel_deceive",word:"deceive",pos:"v",thai:"หลอกลวง ทำให้เชื่อในสิ่งที่ผิด",level:2,levelLabel:"กลาง",
+   sentence:"Don't ___ yourself into thinking that hard work alone guarantees success.",
+   sentenceTh:"อย่าหลอกตัวเองว่าแค่ทำงานหนักจะรับประกันความสำเร็จ",
+   note:"deception (n) / deceptive (adj) / hypocrite (n) = คนหน้าไหว้หลังหลอก",synonyms:["deceive","manipulate","delude","mislead"]},
+
+  // ===== PAGE 40 — ความขัดแย้ง =====
+  {group:"Rel. — ความขัดแย้ง",gid:"rel_conflict",word:"conflict",pos:"v/n",thai:"ขัดแย้ง ความขัดแย้ง",level:1,levelLabel:"ทั่วไป",
+   sentence:"The two reports ___ with each other — they cannot both be accurate.",
+   sentenceTh:"รายงานสองฉบับขัดแย้งกัน — ทั้งคู่ไม่สามารถถูกต้องพร้อมกันได้",
+   note:"conflict (v) = ขัดแย้ง / conflict (n) = ความขัดแย้ง การต่อสู้",synonyms:["conflict","discord","feud","dispute","enmity"]},
+  {group:"Rel. — ความขัดแย้ง",gid:"rel_conflict",word:"discord",pos:"n",thai:"ความไม่ลงรอย ความขัดแย้ง",level:2,levelLabel:"formal",
+   sentence:"The new policy created ___ within the team and affected their performance.",
+   sentenceTh:"นโยบายใหม่สร้างความไม่ลงรอยในทีมและส่งผลต่อการทำงาน",
+   note:"discord = ความไม่กลมกลืน / ในดนตรี = เสียงที่ไม่ประสานกัน",synonyms:["conflict","discord","feud","dispute"]},
+  {group:"Rel. — ความขัดแย้ง",gid:"rel_conflict",word:"feud",pos:"v/n",thai:"ความบาดหมางที่ยาวนาน",level:2,levelLabel:"กลาง",
+   sentence:"The two families had been ___ for generations over a disputed piece of land.",
+   sentenceTh:"สองครอบครัวบาดหมางกันมาหลายชั่วรุ่นเรื่องที่ดินที่เป็นข้อพิพาท",
+   note:"feud = บาดหมางยาวนาน / enmity (n) = ความเป็นศัตรู",synonyms:["feud","conflict","dispute","enmity"]},
+  {group:"Rel. — ความขัดแย้ง",gid:"rel_conflict",word:"dispute",pos:"v/n",thai:"โต้แย้ง ข้อพิพาท",level:1,levelLabel:"ทั่วไป",
+   sentence:"The two countries have been in a ___ over fishing rights in the disputed waters.",
+   sentenceTh:"สองประเทศอยู่ในข้อพิพาทเรื่องสิทธิการประมงในน่านน้ำที่เป็นข้อโต้แย้ง",
+   note:"dispute (n/v) / ใช้ได้ทั้งในชีวิตประจำวันและทางกฎหมาย",synonyms:["dispute","conflict","discord","quarrel"]},
+
+  // ===== PAGE 41 =====
+  {group:"Rel. — หยุดชะงัก",gid:"rel_disrupt",word:"disrupt",pos:"v",thai:"ขัดขวาง ทำให้หยุดชะงัก",level:2,levelLabel:"กลาง",
+   sentence:"The cyberattack ___ the company's operations for several days.",
+   sentenceTh:"การโจมตีทางไซเบอร์ทำให้การดำเนินงานของบริษัทหยุดชะงักหลายวัน",
+   note:"disruption (n) / disruptive (adj) / disruptive technology = เทคโนโลยีที่เปลี่ยนแปลงอุตสาหกรรม",synonyms:["disrupt","interrupt","disturb"]},
+  {group:"Rel. — ช่องว่าง",gid:"rel_gap",word:"gap",pos:"n",thai:"ช่องว่าง ความแตกต่าง",level:1,levelLabel:"ทั่วไป",
+   sentence:"There is a significant ___ between what graduates expect to earn and what employers offer.",
+   sentenceTh:"มีช่องว่างที่สำคัญระหว่างสิ่งที่ผู้จบการศึกษาคาดหวังจะได้รับกับสิ่งที่นายจ้างเสนอ",
+   note:"gap = ช่องว่างทั่วไป / discrepancy = ความไม่สอดคล้องที่ควรเหมือนกัน",synonyms:["gap","discrepancy","disparity"]},
+  {group:"Rel. — ช่องว่าง",gid:"rel_gap",word:"discrepancy",pos:"n",thai:"ความไม่สอดคล้อง ความแตกต่างที่ผิดปกติ",level:3,levelLabel:"formal",
+   sentence:"The auditors found a ___ between the company's reported profits and actual accounts.",
+   sentenceTh:"ผู้ตรวจสอบบัญชีพบความไม่สอดคล้องระหว่างกำไรที่รายงานกับบัญชีจริงของบริษัท",
+   note:"discrepancy = ความต่างที่ไม่ควรเกิดขึ้น มักใช้กับตัวเลข ข้อมูล",synonyms:["discrepancy","gap","inconsistency"]},
+  {group:"Rel. — ย่ำแย่",gid:"rel_plight",word:"plight",pos:"n",thai:"สภาพที่ย่ำแย่ ความลำบาก",level:2,levelLabel:"formal",
+   sentence:"The charity raises awareness of the ___ of children living in extreme poverty.",
+   sentenceTh:"องค์กรการกุศลสร้างความตระหนักถึงสภาพย่ำแย่ของเด็กที่อาศัยอยู่ในความยากจนขั้นรุนแรง",
+   note:"plight (n) มักใช้กับกลุ่มคนที่ต้องการความช่วยเหลือ / grave (adj) = ร้ายแรง น่าเป็นห่วง",synonyms:["plight","predicament","hardship"]},
+  {group:"Rel. — ย่ำแย่",gid:"rel_plight",word:"grave",pos:"adj",thai:"ร้ายแรง น่าเป็นห่วงมาก",level:2,levelLabel:"formal",
+   sentence:"The doctor's expression was ___ as he explained the results of the test.",
+   sentenceTh:"สีหน้าของแพทย์ดูร้ายแรงขณะที่เขาอธิบายผลการตรวจ",
+   note:"grave (adj) = ร้ายแรง / grave (n) = หลุมฝังศพ — สองความหมาย",synonyms:["grave","serious","severe","grim"]},
+  {group:"Rel. — เป็นอริ",gid:"rel_hostile",word:"hostile",pos:"adj",thai:"เป็นอริ เป็นศัตรู",level:2,levelLabel:"กลาง",
+   sentence:"The journalist faced a ___ crowd when she arrived to cover the protest.",
+   sentenceTh:"นักข่าวเผชิญกับฝูงชนที่เป็นปฏิปักษ์เมื่อเธอมาถึงเพื่อรายงานการประท้วง",
+   note:"hostility (n) / hostile ใช้ได้ทั้งคน สภาพแวดล้อม และสถานการณ์",synonyms:["hostile","animosity","enmity","antagonistic"]},
+  {group:"Rel. — เป็นอริ",gid:"rel_hostile",word:"enmity",pos:"n",thai:"ความเป็นศัตรู ความเป็นปฏิปักษ์",level:2,levelLabel:"formal",
+   sentence:"Years of ___ between the two families finally ended when their children married.",
+   sentenceTh:"ความเป็นศัตรูหลายปีระหว่างสองครอบครัวสิ้นสุดลงเมื่อลูกๆ ของพวกเขาแต่งงานกัน",
+   note:"enmity = animosity = hostility แต่ enmity เป็น literary มากกว่า",synonyms:["enmity","animosity","hostility","antipathy"]},
+  {group:"Rel. — ซับซ้อน",gid:"rel_complex",word:"complex",pos:"adj",thai:"ซับซ้อน (ทั่วไป)",level:1,levelLabel:"ทั่วไป",
+   sentence:"The peace negotiations involve a ___ web of political, economic and cultural factors.",
+   sentenceTh:"การเจรจาสันติภาพเกี่ยวข้องกับปัจจัยทางการเมือง เศรษฐกิจ และวัฒนธรรมที่ซับซ้อน",
+   note:"complex = ซับซ้อนทั่วไป / complicated = ยากที่จะเข้าใจ / intricate = ซับซ้อนละเอียดอ่อน",synonyms:["complex","complicated","intricate"]},
+  {group:"Rel. — ซับซ้อน",gid:"rel_complex",word:"complicated",pos:"adj",thai:"ยุ่งยาก เข้าใจยาก",level:2,levelLabel:"กลาง",
+   sentence:"The tax system has become so ___ that most people need professional help to file returns.",
+   sentenceTh:"ระบบภาษีซับซ้อนมากจนคนส่วนใหญ่ต้องการความช่วยเหลือจากผู้เชี่ยวชาญในการยื่นแบบ",
+   note:"complicated มักใช้กับสิ่งที่ยากต่อการทำความเข้าใจหรือแก้ไข",synonyms:["complex","complicated","intricate","convoluted"]},
+  {group:"Rel. — ซับซ้อน",gid:"rel_complex",word:"intricate",pos:"adj",thai:"ซับซ้อนละเอียดอ่อน มีรายละเอียดมาก",level:3,levelLabel:"formal/แรงมาก",
+   sentence:"The watchmaker spent months crafting the ___ mechanism inside the antique clock.",
+   sentenceTh:"ช่างนาฬิกาใช้เวลาหลายเดือนในการสร้างกลไกที่ซับซ้อนละเอียดอ่อนภายในนาฬิกาโบราณ",
+   note:"intricate > complicated > complex / intricate เน้นรายละเอียดที่พันกันอย่างละเอียด",synonyms:["intricate","elaborate","complex","complicated"]},
+  {group:"Rel. — ทำให้เสียหาย",gid:"rel_impair",word:"impair",pos:"v",thai:"บั่นทอน ทำให้เสื่อมลง",level:2,levelLabel:"formal",
+   sentence:"Lack of sleep can severely ___ your concentration and decision-making ability.",
+   sentenceTh:"การนอนหลับไม่เพียงพออาจบั่นทอนสมาธิและความสามารถในการตัดสินใจของคุณอย่างรุนแรง",
+   note:"impair = ลดความสามารถ / mar = ทำให้เสียความงาม / spoil = ทำให้เสียทั้งหมด",synonyms:["impair","mar","spoil","damage"]},
+  {group:"Rel. — ทำให้เสียหาย",gid:"rel_impair",word:"mar",pos:"v",thai:"ทำให้เสียความสวยงาม ทำให้ด่างพร้อย",level:2,levelLabel:"กลาง",
+   sentence:"The graffiti ___ the beauty of the historic building's facade.",
+   sentenceTh:"กราฟฟิตีทำให้ความสวยงามของหน้าอาคารประวัติศาสตร์เสียไป",
+   note:"mar = เสียเล็กน้อยแต่สำคัญ / spoil = เสียทั้งหมด",synonyms:["mar","impair","spoil","blemish"]},
+  {group:"Rel. — ท่าทีเฉยเมย",gid:"rel_indifferent",word:"indifferent",pos:"adj",thai:"ไม่สนใจ ไม่แยแส",level:1,levelLabel:"ทั่วไป",
+   sentence:"The manager seemed completely ___ to the concerns raised by his staff.",
+   sentenceTh:"ผู้จัดการดูเหมือนจะไม่แยแสเลยต่อข้อกังวลที่พนักงานหยิบยก",
+   note:"indifferent = ไม่สนใจเลย / aloof = เจตนาห่างตัวเอง / apathetic = ไม่มีแม้แต่พลังงานจะสนใจ",synonyms:["indifferent","aloof","apathetic","callous","equanimous"]},
+  {group:"Rel. — ท่าทีเฉยเมย",gid:"rel_indifferent",word:"aloof",pos:"adj",thai:"ห่างเหิน วางตัวห่าง",level:2,levelLabel:"กลาง",
+   sentence:"He remained ___ from office gossip and focused entirely on his work.",
+   sentenceTh:"เขาวางตัวห่างจากการนินทาในออฟฟิศและมุ่งความสนใจทั้งหมดไปที่งาน",
+   note:"aloof = เจตนาห่างตัวเองจากผู้อื่น / callous = ไม่มีความเห็นอกเห็นใจเลย",synonyms:["aloof","indifferent","detached","distant"]},
+  {group:"Rel. — ท่าทีเฉยเมย",gid:"rel_indifferent",word:"apathetic",pos:"adj",thai:"เฉื่อยชา ไม่มีความกระตือรือร้น",level:2,levelLabel:"กลาง",
+   sentence:"Young voters have become increasingly ___ about politics because they feel their vote doesn't matter.",
+   sentenceTh:"ผู้มีสิทธิเลือกตั้งรุ่นใหม่เฉื่อยชาต่อการเมืองมากขึ้นเพราะรู้สึกว่าคะแนนโหวตของตัวเองไม่มีความหมาย",
+   note:"apathetic = ไม่มีแรงกระตุ้น / equanimous = สงบนิ่งไม่หวั่นไหว",synonyms:["apathetic","indifferent","listless","passive"]},
+
+  // ===== PAGE 42 =====
+  {group:"Rel. — เลื่อน",gid:"rel_postpone",word:"postpone",pos:"v",thai:"เลื่อนออกไปเป็นเวลาที่กำหนดใหม่",level:1,levelLabel:"ทั่วไป",
+   sentence:"The concert has been ___ until next month due to the lead singer's illness.",
+   sentenceTh:"คอนเสิร์ตถูกเลื่อนออกไปจนถึงเดือนหน้าเนื่องจากนักร้องนำป่วย",
+   note:"postpone = เลื่อนไปวันใหม่ / put off = ภาษาพูด / call off = ยกเลิกเลย",synonyms:["postpone","put off","call off","delay","defer"]},
+  {group:"Rel. — เลื่อน",gid:"rel_postpone",word:"defer",pos:"v",thai:"เลื่อนอย่างเป็นทางการ (เพื่อไตร่ตรอง)",level:2,levelLabel:"formal",
+   sentence:"The board decided to ___ the vote until all members had reviewed the proposal.",
+   sentenceTh:"คณะกรรมการตัดสินใจเลื่อนการลงคะแนนออกไปจนกว่าสมาชิกทุกคนจะได้ตรวจสอบข้อเสนอ",
+   note:"defer มีความเป็นทางการกว่า postpone — มักใช้ในการประชุม/การตัดสินใจ",synonyms:["defer","postpone","delay","put off"]},
+  {group:"Rel. — ห้าม",gid:"rel_prohibit",word:"prohibit",pos:"v",thai:"ห้ามอย่างเป็นทางการ (กฎหมาย)",level:2,levelLabel:"formal",
+   sentence:"The new law ___ the sale of alcohol to anyone under the age of 20.",
+   sentenceTh:"กฎหมายใหม่ห้ามการขายเครื่องดื่มแอลกอฮอล์ให้กับผู้ที่มีอายุต่ำกว่า 20 ปี",
+   note:"prohibition (n) / prohibit มักใช้กับกฎหมายหรือระเบียบทางการ",synonyms:["prohibit","forbid","inhibit","ban","restrict"]},
+  {group:"Rel. — ห้าม",gid:"rel_prohibit",word:"inhibit",pos:"v",thai:"ยับยั้ง ขัดขวางจากภายใน",level:2,levelLabel:"formal",
+   sentence:"Shyness can ___ people from expressing their true opinions in public.",
+   sentenceTh:"ความอาย dapat ยับยั้งไม่ให้คนแสดงความคิดเห็นที่แท้จริงในที่สาธารณะ",
+   note:"inhibit = ยับยั้งจากภายในหรือโดยปัจจัยอ้อม / inhibition (n)",synonyms:["inhibit","prohibit","forbid","restrict"]},
+  {group:"Rel. — ห้าม",gid:"rel_prohibit",word:"forbid",pos:"v",thai:"ห้ามเด็ดขาด",level:2,levelLabel:"กลาง",
+   sentence:"His doctor ___ him from eating any salty food after the heart surgery.",
+   sentenceTh:"แพทย์ของเขาห้ามเด็ดขาดไม่ให้กินอาหารเค็มหลังการผ่าตัดหัวใจ",
+   note:"forbid = ห้ามโดยบุคคล / prohibit = ห้ามโดยกฎ / forbid บอกบุคคลที่ห้ามได้ชัดเจนกว่า",synonyms:["forbid","prohibit","ban","restrict"]},
+  {group:"Rel. — ทะเลาะ",gid:"rel_quarrel",word:"quarrel",pos:"v",thai:"ทะเลาะ ทะเลาะเบาะแว้ง",level:1,levelLabel:"ทั่วไป",
+   sentence:"The two neighbours ___ constantly about the noise and parking spaces.",
+   sentenceTh:"เพื่อนบ้านสองคนทะเลาะกันตลอดเวลาเรื่องเสียงรบกวนและที่จอดรถ",
+   note:"quarrel > bicker / bicker = ทะเลาะเรื่องเล็กน้อยกว่า",synonyms:["quarrel","bicker","dispute","argue"]},
+  {group:"Rel. — ทะเลาะ",gid:"rel_quarrel",word:"bicker",pos:"v",thai:"เถียงกันเรื่องเล็กน้อย",level:1,levelLabel:"เบา",
+   sentence:"The children kept ___ over whose turn it was to use the remote control.",
+   sentenceTh:"เด็กๆ ทะเลาะเบาะแว้งกันเรื่องถึงตาใครจะใช้รีโมตคอนโทรล",
+   note:"bicker = เถียงเรื่องไม่สำคัญ ใช้ได้กับคนใกล้ชิด เช่น พี่น้อง คู่รัก",synonyms:["bicker","quarrel","argue","squabble"]},
+  {group:"Rel. — ปฏิเสธ",gid:"rel_deny",word:"deny",pos:"v",thai:"ปฏิเสธว่าไม่จริง",level:1,levelLabel:"ทั่วไป",
+   sentence:"The suspect ___ having any knowledge of the crime.",
+   sentenceTh:"ผู้ต้องสงสัยปฏิเสธว่าไม่รู้เรื่องอาชญากรรมใดๆ",
+   note:"deny = ปฏิเสธว่าไม่จริง / refuse = ปฏิเสธที่จะทำ / reject = ปฏิเสธอย่างชัดเจน",synonyms:["deny","reject","refuse"]},
+  {group:"Rel. — ปฏิเสธ",gid:"rel_deny",word:"reject",pos:"v",thai:"ปฏิเสธ ไม่รับ",level:2,levelLabel:"กลาง",
+   sentence:"His application was ___ three times before he finally gave up.",
+   sentenceTh:"ใบสมัครของเขาถูกปฏิเสธสามครั้งก่อนที่เขาจะยอมแพ้ในที่สุด",
+   note:"rejection (n) / reject เน้นการไม่ยอมรับอย่างชัดเจน",synonyms:["reject","deny","refuse","turn down"]},
+  {group:"Rel. — ปฏิเสธ",gid:"rel_deny",word:"refuse",pos:"v",thai:"ปฏิเสธที่จะทำ",level:1,levelLabel:"ทั่วไป",
+   sentence:"She ___ to sign the contract until all the terms had been clarified.",
+   sentenceTh:"เธอปฏิเสธที่จะเซ็นสัญญาจนกว่าเงื่อนไขทั้งหมดจะได้รับการชี้แจง",
+   note:"refusal (n) / refuse เน้นการไม่ยอมทำสิ่งที่ถูกขอ",synonyms:["refuse","deny","reject","decline"]},
+  {group:"Rel. — ยุ่งเกี่ยวกับ",gid:"rel_interfere",word:"interfere with",pos:"v",thai:"ขัดขวาง ยุ่งเกินไป",level:1,levelLabel:"ทั่วไป",
+   sentence:"Please don't ___ my work — I know what I'm doing.",
+   sentenceTh:"กรุณาอย่ายุ่งกับงานของฉัน — ฉันรู้ว่าตัวเองกำลังทำอะไร",
+   note:"interfere with = ขัดขวาง / tamper with = แก้ไขโดยไม่มีสิทธิ์ มักทำให้เสียหาย",synonyms:["interfere with","tamper with","meddle with"]},
+  {group:"Rel. — ยุ่งเกี่ยวกับ",gid:"rel_interfere",word:"tamper with",pos:"v",thai:"แก้ไขหรือยุ่งโดยไม่มีสิทธิ์",level:2,levelLabel:"กลาง",
+   sentence:"Someone had ___ the evidence before the investigators arrived at the scene.",
+   sentenceTh:"มีคนแก้ไขหลักฐานก่อนที่นักสืบจะมาถึงที่เกิดเหตุ",
+   note:"tamper with มักมีนัยว่าทำโดยลับๆ และผิดกฎ",synonyms:["tamper with","interfere with","meddle with"]},
+  {group:"Rel. — วุ่นวายกับ",gid:"rel_tangle",word:"tangle with",pos:"v",thai:"พัวพัน ยุ่งเกี่ยวกับ",level:2,levelLabel:"กลาง",
+   sentence:"I wouldn't ___ that company if I were you — they are known for aggressive litigation.",
+   sentenceTh:"ฉันจะไม่พัวพันกับบริษัทนั้นถ้าเป็นคุณ — พวกเขาขึ้นชื่อเรื่องการฟ้องร้องเชิงรุก",
+   note:"tangle with = ยุ่งเกี่ยวกับสิ่งที่อาจทำให้มีปัญหา / entanglement (n)",synonyms:["tangle with","interfere with","mess with"]},
+
+  // ===== PAGE 43 =====
+  {group:"Rel. — ขอบ/ใกล้จะเกิด",gid:"rel_edge",word:"edge",pos:"n",thai:"ขอบ (ทางกายภาพ)",level:1,levelLabel:"ทั่วไป",
+   sentence:"He stood nervously at the ___ of the cliff, looking down at the waves below.",
+   sentenceTh:"เขายืนอยู่ที่ขอบหน้าผาอย่างประหม่า มองลงไปที่คลื่นด้านล่าง",
+   note:"edge = ขอบทางกายภาพ / brink & verge = ใช้กับสถานการณ์เป็นหลัก",synonyms:["edge","brink","verge","threshold"]},
+  {group:"Rel. — ขอบ/ใกล้จะเกิด",gid:"rel_edge",word:"brink",pos:"n",thai:"ขอบของสถานการณ์วิกฤต",level:2,levelLabel:"formal/strong",
+   sentence:"The company was on the ___ of collapse when the new investor stepped in to save it.",
+   sentenceTh:"บริษัทกำลังอยู่บนขอบเหวของการล่มสลายเมื่อนักลงทุนรายใหม่เข้ามาช่วย",
+   note:"on the brink of war/disaster/collapse — ใช้กับสถานการณ์ที่น่ากลัวเสมอ",synonyms:["brink","verge","edge","threshold"]},
+  {group:"Rel. — ขอบ/ใกล้จะเกิด",gid:"rel_edge",word:"verge",pos:"n",thai:"จุดที่ใกล้จะเกิดขึ้น",level:2,levelLabel:"formal",
+   sentence:"She was on the ___ of tears when she heard that her application had been rejected.",
+   sentenceTh:"เธออยู่บนขอบของน้ำตาเมื่อได้ยินว่าใบสมัครของเธอถูกปฏิเสธ",
+   note:"on the verge of = ใกล้จะ... ใช้ได้ทั้งดีและร้าย",synonyms:["verge","brink","edge","threshold"]},
+  {group:"Rel. — ถอน",gid:"rel_withdraw",word:"withdraw",pos:"v",thai:"ถอนตัว ถอน",level:1,levelLabel:"ทั่วไป",
+   sentence:"The company decided to ___ from the market after years of losses.",
+   sentenceTh:"บริษัทตัดสินใจถอนตัวออกจากตลาดหลังจากขาดทุนมาหลายปี",
+   note:"withdrawal (n) — ใช้ได้กับเงิน ทหาร ข้อเสนอ ความสัมพันธ์",synonyms:["withdraw","retreat","pull out","recede"]},
+  {group:"Rel. — เหี่ยวเฉา",gid:"rel_wither",word:"wither",pos:"v",thai:"เหี่ยวเฉา ร่วงโรย",level:2,levelLabel:"literary",
+   sentence:"Without regular investment, even the most successful businesses will eventually ___.",
+   sentenceTh:"หากปราศจากการลงทุนอย่างสม่ำเสมอ แม้แต่ธุรกิจที่ประสบความสำเร็จที่สุดก็จะเหี่ยวเฉาในที่สุด",
+   note:"wither = เหี่ยวเฉาอย่างช้าๆ / fade away = ค่อยๆ หายไป",synonyms:["wither","fade away","decline","deteriorate"]},
+  {group:"Rel. — ยึดมั่น",gid:"rel_cling",word:"attach to",pos:"v",thai:"ผูกพัน ให้ความสำคัญกับ",level:1,levelLabel:"ทั่วไป",
+   sentence:"She ___ great importance ___ maintaining good relationships with her colleagues.",
+   sentenceTh:"เธอให้ความสำคัญอย่างมากกับการรักษาความสัมพันธ์ที่ดีกับเพื่อนร่วมงาน",
+   note:"attach importance to = ให้ความสำคัญกับ",synonyms:["attach to","cling to","adhere to"]},
+  {group:"Rel. — ยึดมั่น",gid:"rel_cling",word:"cling to",pos:"v",thai:"ยึดติดกับ ไม่ยอมปล่อย",level:2,levelLabel:"กลาง",
+   sentence:"He continued to ___ the hope that she would return, even after years had passed.",
+   sentenceTh:"เขายังคงยึดติดกับความหวังว่าเธอจะกลับมา แม้ว่าจะผ่านมาหลายปีแล้ว",
+   note:"cling to = ยึดติดกับสิ่งที่ผ่านไปแล้ว มักใช้กับความหวัง ความทรงจำ",synonyms:["cling to","attach to","adhere to","hold on to"]},
+  {group:"Rel. — ยึดมั่น",gid:"rel_cling",word:"adhere to",pos:"v",thai:"ยึดมั่นในกฎหรือหลักการ",level:2,levelLabel:"formal",
+   sentence:"All participants must ___ the rules and regulations of the competition.",
+   sentenceTh:"ผู้เข้าร่วมทุกคนต้องยึดมั่นในกฎและระเบียบของการแข่งขัน",
+   note:"adhere to = ยึดมั่นในหลักการ / adhesion (n) / adherence (n)",synonyms:["adhere to","cling to","abide by","comply with"]},
 ];
+
 
 // ============ GROUP INDEX ============
 function getGroups() {
@@ -535,6 +681,7 @@ function startSelected() {
   else if (selMode === 'flash') startFlashMode(words);
   else if (selMode === 'match') startMatchMode(words);
   else if (selMode === 'order') startOrderMode(words);
+  else if (selMode === 'cluster') startClusterMode(words);
 }
 
 function goHome() {
@@ -909,6 +1056,265 @@ function retryWrong(){
 }
 
 function showTestMenu(){ goHome(); }
+
+
+// ===== CLUSTER DATA =====
+const CLUSTERS = [
+  {
+    thai:"ประหลาดใจ", hint:"เรียงจากเบา → แรง",
+    words:[
+      {w:"surprise",   note:"ทั่วไป ใช้ได้ทุกบริบท", tags:["spoken","mild"]},
+      {w:"amaze",      note:"ประหลาดใจมากจนชื่นชม", tags:["spoken"]},
+      {w:"astonish",   note:"ตกใจมาก จนแทบไม่เชื่อ", tags:["formal"]},
+      {w:"astound",    note:"ตะลึงงัน พูดไม่ออก", tags:["formal","strong"]},
+      {w:"startle",    note:"สะดุ้ง — เกิดจากสิ่งกะทันหัน", tags:["spoken"]},
+    ]
+  },
+  {
+    thai:"โกรธ", hint:"เรียงจากเบา → แรง + หลายบริบท",
+    words:[
+      {w:"angry",      note:"ทั่วไป", tags:["spoken","mild"]},
+      {w:"irate",      note:"โกรธมาก มักใช้กับลูกค้า", tags:["formal"]},
+      {w:"furious",    note:"เดือดดาล โกรธจัด", tags:["spoken","strong"]},
+      {w:"indignant",  note:"ขุ่นเคืองเพราะรู้สึกไม่ยุติธรรม", tags:["formal"]},
+      {w:"incense",    note:"จุดไฟโกรธ (v)", tags:["literary"]},
+      {w:"enraged",    note:"โกรธจนควบคุมตัวไม่ได้", tags:["strong"]},
+      {w:"wrath",      note:"ความโกรธอย่างรุนแรงน่ากลัว (n)", tags:["literary"]},
+    ]
+  },
+  {
+    thai:"เกลียด", hint:"เรียงจากเบา → แรง",
+    words:[
+      {w:"dislike",    note:"ไม่ชอบ — เบาที่สุด", tags:["spoken","mild"]},
+      {w:"loathe",     note:"รังเกียจ มักใช้กับสิ่งของ/นิสัย", tags:["spoken","strong"]},
+      {w:"detest",     note:"เกลียดชัง ใช้กับคน/พฤติกรรม", tags:["formal","strong"]},
+      {w:"abhor",      note:"รังเกียจอย่างรุนแรง มักเรื่องศีลธรรม", tags:["formal","strong"]},
+      {w:"despise",    note:"ดูถูก มองว่าต่ำต้อย", tags:["formal","strong"]},
+      {w:"antipathy",  note:"ความรู้สึกเป็นปฏิปักษ์ที่ฝังลึก (n)", tags:["formal","literary"]},
+    ]
+  },
+  {
+    thai:"กระตุ้น", hint:"ต่างกันที่วิธีและ register",
+    words:[
+      {w:"motivate",   note:"กระตุ้นด้วยแรงบันดาลใจ", tags:["formal"]},
+      {w:"stimulate",  note:"กระตุ้นให้กระฉับกระเฉง/คิด", tags:["formal"]},
+      {w:"encourage",  note:"ให้กำลังใจ สนับสนุน", tags:["spoken","mild"]},
+      {w:"spur",       note:"กระตุ้นให้เร่งฝีเท้า (v)", tags:["literary"]},
+      {w:"prod",       note:"ผลักดัน จี้ให้ทำ", tags:["spoken"]},
+      {w:"incentive",  note:"สิ่งจูงใจ ผลตอบแทน (n)", tags:["formal"]},
+    ]
+  },
+  {
+    thai:"อธิบาย", hint:"ต่างกันที่ความละเอียดและ register",
+    words:[
+      {w:"explain",    note:"ทั่วไป ชัดเจน", tags:["spoken","mild"]},
+      {w:"expound",    note:"อธิบายอย่างละเอียดเป็นระบบ", tags:["formal"]},
+      {w:"elaborate",  note:"ขยายความ เพิ่มรายละเอียด", tags:["formal"]},
+      {w:"elucidate",  note:"ทำให้กระจ่าง แก้ความสับสน", tags:["formal","literary"]},
+      {w:"substantiate",note:"พิสูจน์ด้วยหลักฐาน", tags:["formal"]},
+      {w:"account for",note:"อธิบายเหตุผลของ", tags:["formal"]},
+    ]
+  },
+  {
+    thai:"เจริญรุ่งเรือง", hint:"ต่างกันที่ขนาดและบริบท",
+    words:[
+      {w:"flourish",   note:"งอกงาม — มักใช้กับพืช/ศิลปะ", tags:["literary"]},
+      {w:"thrive",     note:"เติบโตแข็งแกร่ง — สิ่งมีชีวิต/ธุรกิจ", tags:["spoken"]},
+      {w:"prosper",    note:"มั่งคั่ง — ธุรกิจ/คน", tags:["formal"]},
+      {w:"boom",       note:"เติบโตอย่างรวดเร็ว (n/v)", tags:["spoken"]},
+      {w:"opulent",    note:"หรูหรามั่งคั่งมาก (adj)", tags:["literary","formal"]},
+    ]
+  },
+  {
+    thai:"ห้าม / ขัดขวาง", hint:"ต่างกันที่ความเป็นทางการ",
+    words:[
+      {w:"prohibit",   note:"ห้ามอย่างเป็นทางการ (กฎหมาย)", tags:["formal"]},
+      {w:"forbid",     note:"ห้ามเด็ดขาด (บุคคล/กฎ)", tags:["spoken","formal"]},
+      {w:"inhibit",    note:"ยับยั้งจากภายใน ชะลอ", tags:["formal"]},
+      {w:"ban",        note:"ห้ามอย่างเป็นทางการ สั้นกว่า prohibit", tags:["spoken","formal"]},
+      {w:"restrict",   note:"จำกัด ลดทอน", tags:["formal","mild"]},
+    ]
+  },
+  {
+    thai:"ขอบ / ใกล้จะเกิด", hint:"เรียงจาก physical → figurative",
+    words:[
+      {w:"edge",       note:"ขอบทางกายภาพ — on the edge of a cliff", tags:["spoken","mild"]},
+      {w:"brink",      note:"ขอบของสถานการณ์วิกฤต — on the brink of war", tags:["formal","strong"]},
+      {w:"verge",      note:"ใกล้จะเกิดขึ้น — on the verge of tears", tags:["formal"]},
+      {w:"threshold",  note:"จุดเริ่มต้น/เส้นแบ่ง", tags:["formal","literary"]},
+    ]
+  },
+];
+
+// ===== CLUSTER STATE =====
+let clSelGroups=[], clQueue=[], clIdx=0;
+let clTimeLeft=60, clTimerInterval=null;
+let clFound=[], clTotalScore=0, clRoundResults=[];
+
+function startClusterMode(words){
+  // Build cluster selection screen
+  const test=document.getElementById('s-test');
+  let html=`<div style="margin-bottom:16px;"><div style="font-family:'Fredoka One',cursive;font-size:20px;color:#e94560;margin-bottom:4px;">Cluster Dump</div>
+  <div style="font-size:13px;color:#888;margin-bottom:14px;">พิมพ์ synonym ให้ได้มากที่สุดใน 60 วินาที</div>
+  <div style="display:flex;flex-direction:column;gap:8px;" id="clList">`;
+  CLUSTERS.forEach((c,i)=>{
+    html+=`<div class="group-card" id="clg-${i}" onclick="toggleCl(${i})" style="display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-size:14px;font-weight:700;color:#eee;">${c.thai}</div><div style="font-size:11px;color:#888;">${c.words.length} คำ</div></div>
+      <div id="clgck-${i}" style="font-size:16px;display:none;">✅</div>
+    </div>`;
+  });
+  html+=`</div></div>
+  <button class="btn btn-red" id="clStartBtn" onclick="beginCluster()" disabled style="width:100%;margin-bottom:8px;">▶ เริ่ม Cluster Dump</button>
+  <button class="btn" onclick="goHome()" style="width:100%;">🏠 กลับ</button>`;
+  test.innerHTML=html;
+  clSelGroups=[];
+}
+
+function toggleCl(i){
+  const idx=clSelGroups.indexOf(i);
+  if(idx>=0){clSelGroups.splice(idx,1);document.getElementById('clg-'+i).classList.remove('selected');document.getElementById('clgck-'+i).style.display='none';}
+  else{clSelGroups.push(i);document.getElementById('clg-'+i).classList.add('selected');document.getElementById('clgck-'+i).style.display='block';}
+  document.getElementById('clStartBtn').disabled=clSelGroups.length===0;
+}
+
+function beginCluster(){
+  clQueue=clSelGroups.map(i=>CLUSTERS[i]);
+  clIdx=0; clTotalScore=0; clRoundResults=[];
+  startClRound();
+}
+
+function startClRound(){
+  if(clIdx>=clQueue.length){showClResult();return;}
+  const c=clQueue[clIdx];
+  clFound=[]; clTimeLeft=60;
+  const tagColors={formal:'hp-formal',spoken:'hp-spoken',literary:'hp-literary',strong:'hp-strong',mild:'hp-mild'};
+  const tagLabels={formal:'formal',spoken:'spoken',literary:'literary',strong:'แรง',mild:'เบา'};
+  const allTags=[...new Set(c.words.flatMap(w=>w.tags))];
+
+  document.getElementById('s-test').innerHTML=`
+    <div class="game-header">
+      <div class="timer-ring">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle class="ring-bg" cx="28" cy="28" r="22"/>
+          <circle class="ring-fill" id="clRing" cx="28" cy="28" r="22" style="stroke-dashoffset:0"/>
+        </svg>
+        <div class="timer-num" id="clTimer">60</div>
+      </div>
+      <div class="game-meta">
+        <div class="gm-thai">${c.thai}</div>
+        <div class="gm-hint">${c.hint}</div>
+      </div>
+      <div class="cl-score-badge">
+        <div style="font-size:20px;font-weight:800;color:#5dde5d;" id="clScore">${clTotalScore}</div>
+        <div style="font-size:11px;color:#888;">pts</div>
+      </div>
+    </div>
+    <div class="cl-input-row">
+      <input type="text" id="clInput" placeholder="พิมพ์ synonym อังกฤษ..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+      <button onclick="clSkip()">ข้าม</button>
+    </div>
+    <div class="found-grid" id="clFound"></div>
+    <div class="hint-section">
+      <div class="hint-title">ใบ้ระดับ:</div>
+      <div class="hint-row">${allTags.map(t=>`<span class="hp ${tagColors[t]||''}">${tagLabels[t]||t}</span>`).join('')}</div>
+    </div>
+    <button class="reveal-btn" onclick="clReveal()">แสดงคำที่เหลือ</button>
+    <button class="btn" style="width:100%;margin-top:8px;" onclick="goHome()">🏠 กลับ</button>
+  `;
+
+  const inp=document.getElementById('clInput');
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clSubmit();}});
+  inp.addEventListener('input',function(){
+    const v=this.value.trim().toLowerCase();
+    const c2=clQueue[clIdx];
+    if(c2.words.some(w=>w.w===v&&!clFound.includes(w.w))){this.className='cl-ok';}
+    else this.className='';
+  });
+  inp.focus();
+
+  clearInterval(clTimerInterval);
+  clTimerInterval=setInterval(clTick,1000);
+}
+
+function clTick(){
+  clTimeLeft--;
+  document.getElementById('clTimer').textContent=clTimeLeft;
+  const off=138*(1-clTimeLeft/60);
+  document.getElementById('clRing').style.strokeDashoffset=off;
+  if(clTimeLeft<=10) document.getElementById('clRing').style.stroke='#e94560';
+  if(clTimeLeft<=0){clearInterval(clTimerInterval);clEndRound();}
+}
+
+function clSubmit(){
+  const inp=document.getElementById('clInput');
+  const val=inp.value.trim().toLowerCase();
+  if(!val) return;
+  const c=clQueue[clIdx];
+  const match=c.words.find(w=>w.w===val&&!clFound.includes(w.w));
+  if(match){
+    clFound.push(match.w);
+    const pts=match.tags.includes('strong')?30:(match.tags.includes('formal')||match.tags.includes('literary'))?20:10;
+    clTotalScore+=pts;
+    document.getElementById('clScore').textContent=clTotalScore;
+    const p=document.createElement('span');
+    p.className='fp fp-found'; p.textContent=match.w;
+    document.getElementById('clFound').appendChild(p);
+    inp.value=''; inp.className='';
+    if(clFound.length>=c.words.length){clearInterval(clTimerInterval);setTimeout(clEndRound,300);}
+  } else {
+    inp.classList.add('cl-wrong');
+    setTimeout(()=>inp.classList.remove('cl-wrong'),300);
+    inp.select();
+  }
+}
+
+function clSkip(){clearInterval(clTimerInterval);clEndRound();}
+function clReveal(){
+  clearInterval(clTimerInterval);
+  const c=clQueue[clIdx];
+  c.words.forEach(w=>{
+    if(!clFound.includes(w.w)){
+      const p=document.createElement('span');
+      p.className='fp fp-missed'; p.textContent=w.w;
+      document.getElementById('clFound').appendChild(p);
+    }
+  });
+  setTimeout(clEndRound,600);
+}
+
+function clEndRound(){
+  clearInterval(clTimerInterval);
+  const c=clQueue[clIdx];
+  clRoundResults.push({cluster:c,found:[...clFound]});
+  clIdx++;
+  setTimeout(startClRound,300);
+}
+
+function showClResult(){
+  const total=clRoundResults.reduce((s,r)=>s+r.cluster.words.length,0);
+  const found=clRoundResults.reduce((s,r)=>s+r.found.length,0);
+  const pct=Math.round(found/total*100);
+  let html=`<div class="cl-final">
+    <div class="cl-final-score">${clTotalScore} pts</div>
+    <div class="cl-final-label">นึกออก ${found}/${total} คำ (${pct}%) — ${pct>=80?'เยี่ยมมาก! 🔥':pct>=60?'ดีมาก! 👍':'ฝึกต่อนะครับ 💪'}</div>
+  </div>`;
+  clRoundResults.forEach(r=>{
+    html+=`<div class="cl-result-card"><div class="cl-rc-thai">${r.cluster.thai}</div>`;
+    r.cluster.words.forEach(w=>{
+      const ok=r.found.includes(w.w);
+      html+=`<div class="cl-rw ${ok?'cl-rw-found':'cl-rw-missed'}">
+        <div class="cl-rw-word">${ok?'✓':'✗'} ${w.w}</div>
+        <div class="cl-rw-note">${w.note} · ${w.tags.join(', ')}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`<div style="display:flex;gap:8px;margin-top:8px;">
+    <button class="btn" style="flex:1;" onclick="goHome()">🏠 กลับ</button>
+    <button class="btn btn-red" style="flex:1;" onclick="beginCluster()">🔄 เล่นอีกครั้ง</button>
+  </div>`;
+  document.getElementById('s-test').innerHTML=html;
+}
 
 // ============ INIT ============
 buildHome();
