@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fast English Vocab</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:#1a1a2e;color:#eee;min-height:100vh;}
+
+/* NAV */
+#nav{background:#16213e;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid #0f3460;}
+.nav-title{font-family:'Fredoka One',cursive;font-size:20px;color:#e94560;flex:1;}
+.nav-btn{background:#0f3460;border:none;color:#aaa;font-family:'Nunito',sans-serif;font-size:13px;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all 0.2s;}
+.nav-btn:hover,.nav-btn.active{background:#e94560;color:white;}
+
+/* MAIN */
+#main{max-width:760px;margin:0 auto;padding:16px;}
+
+/* HOME */
+#s-home{padding:20px 0;}
+.home-title{font-family:'Fredoka One',cursive;font-size:28px;color:#e94560;margin-bottom:6px;}
+.home-sub{color:#888;font-size:14px;margin-bottom:20px;}
+.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
+.group-card{background:#16213e;border:2px solid #0f3460;border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s;position:relative;}
+.group-card:hover{border-color:#e94560;transform:translateY(-2px);}
+.group-card.selected{border-color:#e94560;background:#1a0a14;}
+.group-card .gc-name{font-size:14px;font-weight:700;color:#eee;margin-bottom:3px;}
+.group-card .gc-count{font-size:12px;color:#888;}
+.group-card .gc-check{position:absolute;top:8px;right:8px;font-size:16px;display:none;}
+.group-card.selected .gc-check{display:block;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.mode-card{background:#16213e;border:2px solid #0f3460;border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.mode-card:hover{border-color:#e94560;}
+.mode-card .mc-icon{font-size:28px;margin-bottom:6px;}
+.mode-card .mc-name{font-size:15px;font-weight:700;color:#eee;}
+.mode-card .mc-desc{font-size:12px;color:#888;margin-top:3px;}
+.start-btn{width:100%;background:#e94560;border:none;color:white;font-family:'Fredoka One',cursive;font-size:20px;padding:14px;border-radius:12px;cursor:pointer;transition:all 0.2s;}
+.start-btn:hover{background:#c73652;}
+.start-btn:disabled{background:#444;cursor:not-allowed;}
+
+/* LEARN MODE */
+.learn-card{background:#16213e;border-radius:16px;padding:24px;margin-bottom:16px;}
+.lc-group{font-size:12px;color:#e94560;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+.lc-word{font-size:32px;font-weight:800;color:#eee;margin-bottom:4px;}
+.lc-pos{font-size:13px;color:#888;margin-bottom:12px;}
+.lc-thai{font-size:18px;color:#f5a623;font-weight:700;margin-bottom:12px;}
+.lc-level{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px;}
+.level-1{background:#1a3a1a;color:#5dde5d;}
+.level-2{background:#3a2a1a;color:#f5a623;}
+.level-3{background:#3a1a1a;color:#e94560;}
+.lc-sentence{background:#0f3460;border-radius:10px;padding:14px;margin-bottom:10px;}
+.lc-sentence .blank{color:#5dde5d;font-weight:800;}
+.lc-sentence .en{font-size:15px;color:#eee;margin-bottom:4px;}
+.lc-sentence .th{font-size:13px;color:#888;}
+.lc-note{background:#1a1a2e;border-left:3px solid #e94560;padding:10px 14px;font-size:13px;color:#aaa;border-radius:0 8px 8px 0;margin-bottom:16px;}
+.lc-synonyms{margin-bottom:16px;}
+.lc-synonyms .syn-title{font-size:12px;color:#888;margin-bottom:6px;}
+.syn-list{display:flex;flex-wrap:wrap;gap:6px;}
+.syn-pill{background:#0f3460;border-radius:20px;padding:4px 12px;font-size:13px;color:#aaa;}
+.syn-pill.current{background:#e94560;color:white;}
+.nav-row{display:flex;gap:10px;align-items:center;margin-top:8px;}
+.nav-row .nr-count{flex:1;text-align:center;font-size:13px;color:#888;}
+.btn{background:#0f3460;border:none;color:#eee;font-family:'Nunito',sans-serif;font-size:14px;padding:10px 20px;border-radius:10px;cursor:pointer;transition:all 0.2s;}
+.btn:hover{background:#1a4a7a;}
+.btn-red{background:#e94560;}
+.btn-red:hover{background:#c73652;}
+.btn-green{background:#1a6e3a;}
+.btn-green:hover{background:#0f5a2e;}
+
+/* TEST MODES */
+.progress-wrap{background:#0f3460;border-radius:4px;height:6px;margin-bottom:16px;overflow:hidden;}
+.progress-fill{height:100%;background:#e94560;border-radius:4px;transition:width 0.4s;}
+.stats-row{display:flex;gap:10px;margin-bottom:16px;}
+.stat-box{flex:1;background:#16213e;border-radius:10px;padding:8px;text-align:center;}
+.stat-box .sb-n{font-size:20px;font-weight:800;}
+.stat-box .sb-l{font-size:11px;color:#888;}
+.q-card{background:#16213e;border-radius:16px;padding:20px;margin-bottom:14px;}
+.q-group{font-size:11px;color:#e94560;font-weight:700;margin-bottom:6px;text-transform:uppercase;}
+.q-sentence{font-size:17px;line-height:1.7;margin-bottom:6px;}
+.q-blank{display:inline-block;border-bottom:2px solid #e94560;min-width:90px;text-align:center;color:#e94560;font-weight:700;padding:0 8px;}
+.q-thai{font-size:13px;color:#888;margin-bottom:16px;}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.opt{background:#0f3460;border:1.5px solid #1a4a7a;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;color:#eee;text-align:left;transition:all 0.15s;font-family:'Nunito',sans-serif;}
+.opt:hover{border-color:#e94560;}
+.opt.correct{background:#1a3a1a;border-color:#5dde5d;color:#5dde5d;}
+.opt.wrong{background:#3a1a1a;border-color:#e94560;color:#e94560;}
+.opt:disabled{cursor:default;}
+.feedback{border-radius:10px;padding:12px 16px;margin-bottom:12px;display:none;}
+.feedback.show{display:block;}
+.fb-ok{background:#1a3a1a;border-left:3px solid #5dde5d;}
+.fb-no{background:#3a1a1a;border-left:3px solid #e94560;}
+.fb-word{font-size:16px;font-weight:800;color:#eee;margin-bottom:4px;}
+.fb-thai{font-size:14px;color:#f5a623;margin-bottom:6px;}
+.fb-note{font-size:13px;color:#aaa;}
+
+/* FLASHCARD */
+.flashcard{background:#16213e;border-radius:20px;padding:32px 24px;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;margin-bottom:16px;border:2px solid #0f3460;}
+.flashcard:hover{border-color:#e94560;}
+.fc-front .fc-word{font-size:36px;font-weight:800;color:#eee;margin-bottom:8px;}
+.fc-front .fc-pos{font-size:14px;color:#888;}
+.fc-back .fc-thai{font-size:24px;font-weight:700;color:#f5a623;margin-bottom:10px;}
+.fc-back .fc-sent{font-size:14px;color:#aaa;line-height:1.6;}
+.fc-hint{font-size:13px;color:#888;margin-top:12px;}
+.rating-row{display:flex;gap:8px;margin-bottom:16px;}
+.rating-btn{flex:1;padding:10px;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.rb-hard{background:#3a1a1a;color:#e94560;}
+.rb-ok{background:#3a2a1a;color:#f5a623;}
+.rb-easy{background:#1a3a1a;color:#5dde5d;}
+
+/* MATCHING */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.match-item{background:#0f3460;border:1.5px solid #1a4a7a;border-radius:10px;padding:12px;font-size:14px;cursor:pointer;color:#eee;text-align:center;transition:all 0.15s;min-height:52px;display:flex;align-items:center;justify-content:center;}
+.match-item:hover{border-color:#e94560;}
+.match-item.selected{border-color:#f5a623;background:#2a1a0a;color:#f5a623;}
+.match-item.matched{border-color:#5dde5d;background:#1a3a1a;color:#5dde5d;cursor:default;}
+.match-item.wrong-flash{border-color:#e94560;background:#3a1a1a;}
+
+/* ORDERING */
+.order-items{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.order-item{background:#0f3460;border:1.5px solid #1a4a7a;border-radius:10px;padding:12px 16px;cursor:grab;color:#eee;display:flex;align-items:center;gap:10px;transition:all 0.15s;}
+.order-item:hover{border-color:#e94560;}
+.order-item.dragging{opacity:0.5;}
+.order-num{width:24px;height:24px;background:#1a4a7a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.order-item.correct-pos{border-color:#5dde5d;background:#1a3a1a;}
+.order-item.wrong-pos{border-color:#e94560;background:#3a1a1a;}
+.check-btn{width:100%;background:#0f3460;border:none;color:#eee;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:12px;}
+.check-btn:hover{background:#1a4a7a;}
+
+/* END */
+.end-screen{text-align:center;padding:32px 16px;}
+.end-score{font-size:56px;font-weight:800;color:#e94560;font-family:'Fredoka One',cursive;}
+.end-label{font-size:16px;color:#888;margin-bottom:20px;}
+.wrong-review{text-align:left;margin-top:16px;}
+.wr-title{font-size:14px;font-weight:700;margin-bottom:10px;color:#eee;}
+.wr-item{padding:10px 0;border-bottom:1px solid #0f3460;}
+.wr-word{font-size:15px;font-weight:700;color:#e94560;}
+.wr-thai{font-size:13px;color:#f5a623;}
+.wr-note{font-size:12px;color:#888;margin-top:3px;}
+</style>
+</head>
+<body>
+
+<div id="nav">
+  <div class="nav-title">📚 Fast English</div>
+  <button class="nav-btn active" id="nb-home" onclick="goHome()">🏠 หน้าหลัก</button>
+  <button class="nav-btn" id="nb-learn" onclick="startLearn()">📖 เรียน</button>
+  <button class="nav-btn" id="nb-test" onclick="showTestMenu()">✏️ ทดสอบ</button>
+</div>
+
+<div id="main">
+  <!-- HOME -->
+  <div id="s-home">
+    <div class="home-title">Fast English Vocab Trainer</div>
+    <div class="home-sub">เลือกหมวดคำศัพท์ที่ต้องการฝึก</div>
+    <div class="group-grid" id="groupGrid"></div>
+    <div id="modeSection" style="display:none;">
+      <div style="font-size:14px;font-weight:700;color:#888;margin-bottom:10px;">เลือกโหมด:</div>
+      <div class="mode-grid">
+        <div class="mode-card" onclick="selectMode('learn')">
+          <div class="mc-icon">📖</div>
+          <div class="mc-name">เรียน</div>
+          <div class="mc-desc">อ่านคำ + อธิบาย</div>
+        </div>
+        <div class="mode-card" onclick="selectMode('fill')">
+          <div class="mc-icon">✏️</div>
+          <div class="mc-name">Fill in Blank</div>
+          <div class="mc-desc">เติมคำในประโยค</div>
+        </div>
+        <div class="mode-card" onclick="selectMode('mcq')">
+          <div class="mc-icon">🎯</div>
+          <div class="mc-name">MCQ</div>
+          <div class="mc-desc">เลือกตอบ 4 ตัวเลือก</div>
+        </div>
+        <div class="mode-card" onclick="selectMode('flash')">
+          <div class="mc-icon">🃏</div>
+          <div class="mc-name">Flashcard</div>
+          <div class="mc-desc">พลิกดูคำ-ความหมาย</div>
+        </div>
+        <div class="mode-card" onclick="selectMode('match')">
+          <div class="mc-icon">🔗</div>
+          <div class="mc-name">จับคู่</div>
+          <div class="mc-desc">คำ ↔ ความหมาย</div>
+        </div>
+        <div class="mode-card" onclick="selectMode('order')">
+          <div class="mc-icon">📊</div>
+          <div class="mc-name">เรียงระดับ</div>
+          <div class="mc-desc">เบา → แรง</div>
+        </div>
+      </div>
+      <button class="start-btn" id="startBtn" onclick="startSelected()" disabled>▶ เริ่มเลย!</button>
+    </div>
+  </div>
+
+  <!-- LEARN -->
+  <div id="s-learn" style="display:none;"></div>
+
+  <!-- TEST -->
+  <div id="s-test" style="display:none;"></div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const VOCAB = [
+  // ===== 1. FEELING - อารมณ์ลบ =====
+  {
+    group:"1. Feeling — ประหลาดใจ", gid:"feeling_surprise",
+    word:"astound", pos:"v", thai:"ตะลึง, ประหลาดใจมาก",
+    level:3, levelLabel:"แรงมาก",
+    sentence:"He was ___ when he found out he had won the lottery.",
+    sentenceTh:"เขาตะลึงเมื่อรู้ว่าตัวเองถูกรางวัลลอตเตอรี่",
+    note:"astound > astonish > amaze > surprise (แรงลดลง) / astounded = ตะลึงงัน ถึงกับพูดไม่ออก",
+    synonyms:["surprise","amaze","astonish","astound","startle"]
+  },
+  {
+    group:"1. Feeling — ประหลาดใจ", gid:"feeling_surprise",
+    word:"startle", pos:"v", thai:"ทำให้สะดุ้ง, ตกใจกระทันหัน",
+    level:2, levelLabel:"กลาง",
+    sentence:"The sudden noise ___ everyone in the room.",
+    sentenceTh:"เสียงดังกะทันหันทำให้ทุกคนในห้องสะดุ้งตกใจ",
+    note:"startle = ตกใจเพราะสิ่งที่เกิดขึ้นกะทันหัน (เสียง, การปรากฏตัว) / ต่างจาก surprise ที่เน้นความไม่คาดฝัน",
+    synonyms:["surprise","amaze","astonish","astound","startle"]
+  },
+  {
+    group:"1. Feeling — อารมณ์เสีย", gid:"feeling_upset",
+    word:"disconcerted", pos:"adj", thai:"ไม่สบายใจ, หงุดหงิดใจ, ถูกรบกวนจิตใจ",
+    level:2, levelLabel:"กลาง",
+    sentence:"She was ___ to discover that her name had been left off the list.",
+    sentenceTh:"เธอรู้สึกไม่สบายใจมากเมื่อพบว่าชื่อตัวเองถูกตัดออกจากรายชื่อ",
+    note:"disconcerted = รู้สึกว่าสิ่งที่เกิดขึ้นไม่ถูกต้อง/ไม่เป็นธรรม ทำให้หัวสับสน / ต่างจาก upset ที่เน้นอารมณ์เสียทั่วไป",
+    synonyms:["upset","grumpy","irritate","disconcerted"]
+  },
+  {
+    group:"1. Feeling — โกรธ", gid:"feeling_angry",
+    word:"furious", pos:"adj", thai:"โกรธจัด, เดือดดาล",
+    level:3, levelLabel:"แรงมาก",
+    sentence:"The manager was ___ when he found out that his team had missed the deadline.",
+    sentenceTh:"ผู้จัดการเดือดดาลเมื่อรู้ว่าทีมของตัวเองพลาดกำหนดส่งงาน",
+    note:"furious > irate > angry (แรงลดลง) / furious มักใช้กับสถานการณ์ที่ยิ่งใหญ่หรือร้ายแรง",
+    synonyms:["angry","irate","furious","incense","indignant","enraged"]
+  },
+  {
+    group:"1. Feeling — โกรธ", gid:"feeling_angry",
+    word:"indignant", pos:"adj", thai:"ขุ่นเคือง, โกรธเพราะรู้สึกว่าถูกอยุติธรรม",
+    level:2, levelLabel:"กลาง",
+    sentence:"She was ___ at the suggestion that she had cheated in the exam.",
+    sentenceTh:"เธอขุ่นเคืองมากที่มีคนบอกว่าเธอโกงข้อสอบ",
+    note:"indignant = โกรธเพราะรู้สึกว่าถูกปฏิบัติอย่างไม่ยุติธรรม มักใช้กับเรื่องศีลธรรมหรือความถูกผิด",
+    synonyms:["angry","irate","furious","incense","indignant","enraged"]
+  },
+  {
+    group:"1. Feeling — เกลียด", gid:"feeling_hate",
+    word:"abhor", pos:"v", thai:"รังเกียจอย่างรุนแรง, ขยะแขยง",
+    level:3, levelLabel:"แรงมาก",
+    sentence:"Most civilized people ___ any form of violence against children.",
+    sentenceTh:"คนที่มีอารยธรรมส่วนใหญ่รังเกียจความรุนแรงต่อเด็กอย่างสิ้นเชิง",
+    note:"abhor > detest > loathe > dislike (แรงลดลง) / abhor มักใช้กับสิ่งที่ขัดกับคุณธรรมหรือหลักการ",
+    synonyms:["dislike","loathe","detest","abhor","despise"]
+  },
+  {
+    group:"1. Feeling — เกลียด", gid:"feeling_hate",
+    word:"antipathy", pos:"n", thai:"ความรู้สึกเป็นปฏิปักษ์, ความเกลียดชัง",
+    level:2, levelLabel:"กลาง",
+    sentence:"There has always been a strong ___ between the two rival football clubs.",
+    sentenceTh:"มีความรู้สึกเป็นปฏิปักษ์อย่างรุนแรงระหว่างสองสโมสรฟุตบอลคู่แข่งมาโดยตลอด",
+    note:"antipathy (n) = ความรู้สึกไม่ชอบที่ฝังลึก มักเกิดจากธรรมชาติหรือประสบการณ์ / antipathetic (adj)",
+    synonyms:["dislike","loathe","detest","abhor","antipathy"]
+  },
+  // ===== RELATIONSHIP - ความสัมพันธ์ทางลบ =====
+  {
+    group:"Rel. — ทอดทิ้ง", gid:"rel_abandon",
+    word:"relinquish", pos:"v", thai:"สละ, ยกเลิกสิทธิ์อย่างเป็นทางการ",
+    level:3, levelLabel:"formal มาก",
+    sentence:"The king was forced to ___ his throne after the revolution.",
+    sentenceTh:"กษัตริย์ถูกบังคับให้สละบัลลังก์หลังการปฏิวัติ",
+    note:"relinquish = สละสิ่งที่เคยครอบครองอย่างเป็นทางการ (rights, power, claim) / ต่างจาก abandon ที่เน้นการละทิ้งอย่างกะทันหัน",
+    synonyms:["abandon","relinquish"]
+  },
+  {
+    group:"Rel. — ขมขื่น", gid:"rel_bitter",
+    word:"acrimonious", pos:"adj", thai:"เต็มไปด้วยความขมขื่น, รุนแรงในคำพูด",
+    level:3, levelLabel:"แรงมาก",
+    sentence:"The divorce proceedings became increasingly ___ as both sides refused to compromise.",
+    sentenceTh:"กระบวนการหย่าร้างยิ่งขมขื่นมากขึ้นเรื่อยๆ เมื่อทั้งสองฝ่ายปฏิเสธที่จะประนีประนอม",
+    note:"acrimonious = bitter ที่เข้มข้นกว่า มักใช้กับการโต้เถียง การหย่าร้าง หรือการเจรจาที่รุนแรง",
+    synonyms:["bitter","acrimonious"]
+  },
+  {
+    group:"Rel. — สร้างความเจ็บปวด", gid:"rel_hurt",
+    word:"afflict", pos:"v", thai:"ทำให้ทุกข์ทรมาน (มักเป็นโรคหรือปัญหาใหญ่)",
+    level:2, levelLabel:"กลาง",
+    sentence:"Millions of people around the world are ___ by hunger and poverty.",
+    sentenceTh:"คนหลายล้านคนทั่วโลกต้องทุกข์ทรมานจากความหิวโหยและความยากจน",
+    note:"afflict = ทำให้ทุกข์ทรมานอย่างต่อเนื่อง มักใช้ passive: be afflicted by/with / injure = ทำร้ายร่างกายโดยตรง",
+    synonyms:["hurt","afflict","injure"]
+  },
+  {
+    group:"Rel. — ทำให้สถานการณ์แย่ลง", gid:"rel_aggravate",
+    word:"aggravate", pos:"v", thai:"ทำให้เลวร้ายยิ่งขึ้น",
+    level:2, levelLabel:"กลาง",
+    sentence:"Scratching an insect bite will only ___ the irritation.",
+    sentenceTh:"การเกาแผลถูกแมลงกัดจะยิ่งทำให้อาการแย่ลงเท่านั้น",
+    note:"aggravate = ทำให้สิ่งที่แย่อยู่แล้วแย่ลงไปอีก / aggravation (n) / worsen = ใช้ได้ทั่วไป",
+    synonyms:["aggravate","worsen"]
+  },
+  {
+    group:"Rel. — ความโกรธเคือง", gid:"rel_animosity",
+    word:"animosity", pos:"n", thai:"ความเป็นศัตรู, ความเคียดแค้น",
+    level:2, levelLabel:"กลาง",
+    sentence:"Despite their past conflicts, there is no longer any ___ between the two nations.",
+    sentenceTh:"แม้จะมีความขัดแย้งในอดีต แต่ปัจจุบันไม่มีความเป็นศัตรูระหว่างสองชาตินั้นอีกแล้ว",
+    note:"animosity = ความเป็นศัตรูที่ฝังลึก / wrath = ความโกรธที่รุนแรงและน่ากลัว / fury = ความโกรธที่ระเบิดออกมา",
+    synonyms:["animosity","fury","wrath","hatred","anger"]
+  },
+  {
+    group:"Rel. — ทำให้สงบโดยการยอม", gid:"rel_appease",
+    word:"appease", pos:"v", thai:"ทำให้สงบ, ประนีประนอมด้วยการยอมให้",
+    level:2, levelLabel:"กลาง",
+    sentence:"The government tried to ___ the protesters by promising to review the policy.",
+    sentenceTh:"รัฐบาลพยายามทำให้ผู้ประท้วงสงบลงด้วยการสัญญาว่าจะทบทวนนโยบาย",
+    note:"appease = ยอมให้เพื่อให้อีกฝ่ายหยุดโกรธ / pacify = ทำให้สงบด้วยการปลอบโยน / มักมีความหมายเชิงลบ (ยอมแบบอ่อนแอ)",
+    synonyms:["appease","pacify"]
+  },
+  // ===== Relationship page 40 =====
+  {
+    group:"Rel. — ไม่ยอมรับความเห็นต่าง", gid:"rel_intolerant",
+    word:"insular", pos:"adj", thai:"คับแคบ, ไม่รับรู้โลกภายนอก",
+    level:2, levelLabel:"กลาง",
+    sentence:"Living in such a remote village had made him rather ___ in his views.",
+    sentenceTh:"การอาศัยอยู่ในหมู่บ้านที่โดดเดี่ยวทำให้เขามีมุมมองที่คับแคบ",
+    note:"insular = ปิดตัวเองจากแนวคิดภายนอก คล้ายเกาะ (island) / narrow-minded = ใจแคบทั่วไป / bigotry = ความลำเอียงและไม่ยอมรับ",
+    synonyms:["narrow-minded","intolerant","insular"]
+  },
+  {
+    group:"Rel. — หลอกลวง", gid:"rel_deceive",
+    word:"manipulate", pos:"v", thai:"บงการ, ชักใย, หลอกควบคุม",
+    level:2, levelLabel:"กลาง",
+    sentence:"She felt that her emotions had been ___ by the politician's speech.",
+    sentenceTh:"เธอรู้สึกว่าอารมณ์ของตัวเองถูกบงการโดยสุนทรพจน์ของนักการเมือง",
+    note:"manipulate = ควบคุมหรือมีอิทธิพลต่อผู้อื่นอย่างแยบยล / entice = ล่อใจ / deceive = หลอกให้เชื่อในสิ่งที่ผิด",
+    synonyms:["lure","allure","manipulate","entice","deceive"]
+  },
+  {
+    group:"Rel. — ความขัดแย้ง", gid:"rel_conflict",
+    word:"discord", pos:"n", thai:"ความไม่ลงรอย, ความขัดแย้ง",
+    level:2, levelLabel:"กลาง",
+    sentence:"The new policy has sown seeds of ___ within the organization.",
+    sentenceTh:"นโยบายใหม่ได้หว่านเมล็ดพันธุ์แห่งความขัดแย้งภายในองค์กร",
+    note:"discord = ความไม่กลมกลืน ทั้งในความสัมพันธ์และดนตรี / conflict = การต่อสู้หรือขัดแย้ง / feud = ความบาดหมางที่ยาวนาน",
+    synonyms:["conflict","discord","feud","dispute","enmity"]
+  },
+  // ===== Page 41 =====
+  {
+    group:"Rel. — หยุดชะงัก", gid:"rel_disrupt",
+    word:"disrupt", pos:"v", thai:"ขัดขวาง, ทำให้หยุดชะงัก",
+    level:2, levelLabel:"กลาง",
+    sentence:"The heavy snowstorm ___ flights across the entire country.",
+    sentenceTh:"พายุหิมะหนักทำให้เที่ยวบินทั่วประเทศหยุดชะงัก",
+    note:"disrupt = ขัดขวางการดำเนินของสิ่งปกติ / disruption (n) / disruptive (adj) = ที่ก่อให้เกิดการหยุดชะงัก",
+    synonyms:["disrupt"]
+  },
+  {
+    group:"Rel. — ช่องว่าง", gid:"rel_gap",
+    word:"discrepancy", pos:"n", thai:"ความไม่สอดคล้อง, ความแตกต่างที่ผิดปกติ",
+    level:3, levelLabel:"formal",
+    sentence:"There is a significant ___ between what the company claims and its actual sales figures.",
+    sentenceTh:"มีความไม่สอดคล้องอย่างมีนัยสำคัญระหว่างสิ่งที่บริษัทอ้างกับยอดขายจริง",
+    note:"discrepancy = ความต่างที่ควรเหมือนกันแต่ไม่เหมือน / gap = ช่องว่างทั่วไป",
+    synonyms:["gap","discrepancy"]
+  },
+  {
+    group:"Rel. — ย่ำแย่", gid:"rel_plight",
+    word:"plight", pos:"n", thai:"สภาพที่ย่ำแย่, ความลำบาก",
+    level:2, levelLabel:"กลาง",
+    sentence:"The documentary highlighted the ___ of refugees living in temporary camps.",
+    sentenceTh:"สารคดีได้นำเสนอสภาพที่ย่ำแย่ของผู้ลี้ภัยที่อาศัยอยู่ในค่ายชั่วคราว",
+    note:"plight (n) = สถานการณ์ที่เลวร้าย มักใช้กับกลุ่มคนที่ต้องการความช่วยเหลือ / grave (adj) = ร้ายแรง, น่าเป็นห่วง",
+    synonyms:["plight","grave","sour"]
+  },
+  {
+    group:"Rel. — ซับซ้อน", gid:"rel_complex",
+    word:"intricate", pos:"adj", thai:"ซับซ้อนละเอียดอ่อน, มีรายละเอียดมาก",
+    level:3, levelLabel:"แรงมาก",
+    sentence:"The ___ patterns on the ancient tapestry took years to weave.",
+    sentenceTh:"ลวดลายที่ซับซ้อนละเอียดอ่อนบนผ้าทอโบราณใช้เวลาหลายปีในการทอ",
+    note:"intricate > complicated > complex (ลำดับจากละเอียดอ่อนมากสุดไปทั่วไป) / intricate เน้นรายละเอียดที่พันกัน",
+    synonyms:["complex","complicated","intricate"]
+  },
+  {
+    group:"Rel. — ทำให้เสียหาย", gid:"rel_impair",
+    word:"impair", pos:"v", thai:"บั่นทอน, ทำให้เสื่อมลง",
+    level:2, levelLabel:"กลาง",
+    sentence:"Drinking alcohol can seriously ___ your ability to drive.",
+    sentenceTh:"การดื่มแอลกอฮอล์อาจบั่นทอนความสามารถในการขับรถของคุณอย่างร้ายแรง",
+    note:"impair = ลดความสามารถหรือคุณภาพ มักใช้กับ vision/hearing/judgment / mar = ทำให้เสียความงาม / spoil = ทำให้เสียทั้งหมด",
+    synonyms:["impair","mar","spoil"]
+  },
+  {
+    group:"Rel. — ท่าทีเฉยเมย", gid:"rel_indifferent",
+    word:"aloof", pos:"adj", thai:"ห่างเหิน, ไม่สนใจผู้อื่น",
+    level:2, levelLabel:"กลาง",
+    sentence:"Despite being the CEO, she remained ___ from office politics.",
+    sentenceTh:"แม้จะเป็น CEO แต่เธอยังคงวางตัวห่างเหินจากการเมืองในออฟฟิศ",
+    note:"aloof = เจตนาห่างตัวเองจากผู้อื่น / indifferent = ไม่สนใจเลย / apathetic = ไม่มีความรู้สึกหรือพลังงาน / equanimous = สงบ ไม่หวั่นไหว",
+    synonyms:["indifferent","aloof","apathetic","callous","equanimous"]
+  },
+  // ===== Page 42 =====
+  {
+    group:"Rel. — เลื่อน", gid:"rel_postpone",
+    word:"defer", pos:"v", thai:"เลื่อนออกไป (มักเพื่อไตร่ตรอง)",
+    level:2, levelLabel:"formal",
+    sentence:"The committee decided to ___ the final decision until more information was available.",
+    sentenceTh:"คณะกรรมการตัดสินใจเลื่อนการตัดสินใจขั้นสุดท้ายออกไปจนกว่าจะมีข้อมูลเพิ่มเติม",
+    note:"defer = เลื่อนออกไปอย่างเป็นทางการ / postpone = เลื่อนไปเวลาที่กำหนดใหม่ / put off = ภาษาพูด / call off = ยกเลิก",
+    synonyms:["postpone","put off","call off","delay","defer"]
+  },
+  {
+    group:"Rel. — ห้าม", gid:"rel_prohibit",
+    word:"inhibit", pos:"v", thai:"ยับยั้ง, ขัดขวางการพัฒนา",
+    level:2, levelLabel:"กลาง",
+    sentence:"Fear of failure can ___ creativity and prevent people from taking risks.",
+    sentenceTh:"ความกลัวความล้มเหลวสามารถยับยั้งความคิดสร้างสรรค์และขัดขวางไม่ให้คนกล้าเสี่ยง",
+    note:"inhibit = ยับยั้ง/ชะลอจากภายใน / prohibit = ห้ามอย่างเป็นทางการ (กฎหมาย) / forbid = ห้ามอย่างเด็ดขาด",
+    synonyms:["prohibit","inhibit","forbid"]
+  },
+  {
+    group:"Rel. — ทะเลาะ", gid:"rel_quarrel",
+    word:"bicker", pos:"v", thai:"เถียงกันเรื่องเล็กน้อย, ทะเลาะเบาะแว้ง",
+    level:1, levelLabel:"เบา",
+    sentence:"The children kept ___ over whose turn it was to use the computer.",
+    sentenceTh:"เด็กๆ ทะเลาะเบาะแว้งกันเรื่องถึงตาใครใช้คอมพิวเตอร์",
+    note:"bicker = เถียงเรื่องไม่สำคัญ / quarrel = ทะเลาะหนักกว่า / dispute = โต้แย้งอย่างเป็นทางการ",
+    synonyms:["quarrel","bicker","dispute"]
+  },
+  {
+    group:"Rel. — ปฏิเสธ", gid:"rel_deny",
+    word:"reject", pos:"v", thai:"ปฏิเสธ, ไม่รับ",
+    level:2, levelLabel:"กลาง",
+    sentence:"The publisher ___ her manuscript three times before finally accepting it.",
+    sentenceTh:"สำนักพิมพ์ปฏิเสธต้นฉบับของเธอถึงสามครั้งก่อนที่จะยอมรับในที่สุด",
+    note:"reject = ปฏิเสธอย่างชัดเจน / refuse = ปฏิเสธที่จะทำ / deny = ปฏิเสธว่าไม่จริง",
+    synonyms:["deny","reject","refuse"]
+  },
+  {
+    group:"Rel. — ยุ่งเกี่ยวกับ", gid:"rel_interfere",
+    word:"tamper with", pos:"v", thai:"แก้ไขหรือยุ่งเกี่ยวโดยไม่ได้รับอนุญาต",
+    level:2, levelLabel:"กลาง",
+    sentence:"Someone had ___ the evidence before the police arrived.",
+    sentenceTh:"มีคนบางคนแก้ไขหลักฐานก่อนที่ตำรวจจะมาถึง",
+    note:"tamper with = ยุ่งโดยไม่มีสิทธิ์ มักทำให้เสียหาย / interfere with = ขัดขวางหรือยุ่งเกินไป",
+    synonyms:["interfere with","tamper with"]
+  },
+  // ===== Page 43 =====
+  {
+    group:"Rel. — ขอบ", gid:"rel_edge",
+    word:"brink", pos:"n", thai:"ขอบ (ของสถานการณ์วิกฤต)",
+    level:2, levelLabel:"กลาง",
+    sentence:"The company was on the ___ of bankruptcy when the new investor stepped in.",
+    sentenceTh:"บริษัทกำลังอยู่บนขอบเหวของการล้มละลายเมื่อนักลงทุนรายใหม่เข้ามา",
+    note:"brink = ขอบของสถานการณ์ที่น่ากลัว เช่น on the brink of war/disaster / verge = ใกล้จะเกิดขึ้น / edge = ขอบทางกายภาพ",
+    synonyms:["edge","brink","verge"]
+  },
+  {
+    group:"Rel. — ยึดมั่น", gid:"rel_cling",
+    word:"adhere to", pos:"v", thai:"ยึดมั่นใน (กฎ, หลักการ)",
+    level:2, levelLabel:"formal",
+    sentence:"All members are expected to ___ the code of conduct at all times.",
+    sentenceTh:"สมาชิกทุกคนคาดว่าจะต้องยึดมั่นในประมวลจริยธรรมตลอดเวลา",
+    note:"adhere to = ยึดมั่นในกฎหรือหลักการ / cling to = ยึดติดกับสิ่งที่ผ่านไปแล้ว / attach to = ผูกพันกับ",
+    synonyms:["attach to","cling to","adhere to"]
+  },
+];
+
+// ============ GROUP INDEX ============
+function getGroups() {
+  const map = {};
+  VOCAB.forEach(v => {
+    if (!map[v.gid]) map[v.gid] = { name: v.group, gid: v.gid, words: [] };
+    map[v.gid].words.push(v);
+  });
+  return Object.values(map);
+}
+
+// ============ STATE ============
+let selGroups = [], selMode = null;
+let learnIdx = 0, learnWords = [];
+let testWords = [], testIdx = 0, testScore = 0, testWrong = [];
+let fcFlipped = false, fcWords = [], fcIdx = 0, fcHard = [], fcOk = [], fcEasy = [];
+let matchWords = [], matchLeft = [], matchRight = [], matchSel = null, matchDone = 0;
+
+// ============ HOME ============
+function buildHome() {
+  const groups = getGroups();
+  let html = '';
+  groups.forEach(g => {
+    const sel = selGroups.includes(g.gid);
+    html += `<div class="group-card${sel?' selected':''}" onclick="toggleGroup('${g.gid}')">
+      <div class="gc-check">✅</div>
+      <div class="gc-name">${g.name}</div>
+      <div class="gc-count">${g.words.length} คำ</div>
+    </div>`;
+  });
+  document.getElementById('groupGrid').innerHTML = html;
+  document.getElementById('modeSection').style.display = selGroups.length > 0 ? 'block' : 'none';
+  document.getElementById('startBtn').disabled = !selMode;
+}
+
+function toggleGroup(gid) {
+  const i = selGroups.indexOf(gid);
+  if (i >= 0) selGroups.splice(i, 1);
+  else selGroups.push(gid);
+  buildHome();
+}
+
+function selectMode(m) {
+  selMode = m;
+  document.querySelectorAll('.mode-card').forEach(c => c.style.border = '2px solid #0f3460');
+  event.currentTarget.style.border = '2px solid #e94560';
+  document.getElementById('startBtn').disabled = false;
+}
+
+function getSelectedWords() {
+  return VOCAB.filter(v => selGroups.includes(v.gid));
+}
+
+function shuffle(a) { const r=[...a]; for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];} return r; }
+
+function startSelected() {
+  const words = getSelectedWords();
+  if (words.length === 0) return;
+  if (selMode === 'learn') startLearnMode(words);
+  else if (selMode === 'fill') startFillMode(words);
+  else if (selMode === 'mcq') startMCQMode(words);
+  else if (selMode === 'flash') startFlashMode(words);
+  else if (selMode === 'match') startMatchMode(words);
+  else if (selMode === 'order') startOrderMode(words);
+}
+
+function goHome() {
+  showScreen('s-home');
+  setNavActive('nb-home');
+}
+
+function showScreen(id) {
+  ['s-home','s-learn','s-test'].forEach(s => document.getElementById(s).style.display = s===id?'block':'none');
+}
+
+function setNavActive(id) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============ LEARN MODE ============
+function startLearnMode(words) {
+  learnWords = words;
+  learnIdx = 0;
+  showScreen('s-learn');
+  setNavActive('nb-learn');
+  renderLearn();
+}
+
+function startLearn() {
+  if (selGroups.length === 0) { goHome(); return; }
+  startLearnMode(getSelectedWords());
+}
+
+function renderLearn() {
+  const w = learnWords[learnIdx];
+  const levelColors = ['','level-1','level-2','level-3'];
+  const synHtml = w.synonyms ? w.synonyms.map(s =>
+    `<span class="syn-pill${s===w.word?' current':''}">${s}</span>`).join('') : '';
+
+  document.getElementById('s-learn').innerHTML = `
+    <div class="learn-card">
+      <div class="lc-group">${w.group}</div>
+      <div class="lc-word">${w.word}</div>
+      <div class="lc-pos">${w.pos}</div>
+      <div class="lc-thai">${w.thai}</div>
+      ${w.level ? `<span class="lc-level ${levelColors[w.level]}">${w.levelLabel}</span>` : ''}
+      <div class="lc-sentence">
+        <div class="en">${w.sentence.replace('___', `<span class="blank">${w.word}</span>`)}</div>
+        <div class="th">${w.sentenceTh}</div>
+      </div>
+      ${w.note ? `<div class="lc-note">💡 ${w.note}</div>` : ''}
+      ${synHtml ? `<div class="lc-synonyms"><div class="syn-title">คำในกลุ่มเดียวกัน:</div><div class="syn-list">${synHtml}</div></div>` : ''}
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="learnPrev()">← ก่อนหน้า</button>
+      <div class="nr-count">${learnIdx+1} / ${learnWords.length}</div>
+      <button class="btn btn-red" onclick="learnNext()">ถัดไป →</button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:10px;" onclick="goHome()">🏠 กลับหน้าหลัก</button>
+  `;
+}
+
+function learnNext() { if (learnIdx < learnWords.length-1) { learnIdx++; renderLearn(); } }
+function learnPrev() { if (learnIdx > 0) { learnIdx--; renderLearn(); } }
+
+// ============ FILL IN BLANK ============
+function startFillMode(words) {
+  testWords = shuffle(words);
+  testIdx = 0; testScore = 0; testWrong = [];
+  showScreen('s-test');
+  renderFill();
+}
+
+function getWrongOpts(correct, all, n) {
+  const pool = shuffle(all.filter(w => w.word !== correct.word)).slice(0, n);
+  return pool.map(w => w.word);
+}
+
+function renderFill() {
+  if (testIdx >= testWords.length) { renderEnd(); return; }
+  const w = testWords[testIdx];
+  const wrongs = getWrongOpts(w, testWords, 3);
+  const opts = shuffle([w.word, ...wrongs]);
+  const pct = (testIdx/testWords.length*100).toFixed(0);
+
+  document.getElementById('s-test').innerHTML = `
+    <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-box-n sb-n">${testIdx+1}/${testWords.length}</div><div class="sb-l">ข้อ</div></div>
+      <div class="stat-box"><div class="sb-n" style="color:#5dde5d">${testScore}</div><div class="sb-l">ถูก</div></div>
+      <div class="stat-box"><div class="sb-n" style="color:#e94560">${testIdx-testScore}</div><div class="sb-l">ผิด</div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-group">${w.group}</div>
+      <div class="q-sentence">${w.sentence.replace('___','<span class="q-blank">___</span>')}</div>
+      <div class="q-thai">${w.sentenceTh}</div>
+      <div class="opts-grid">
+        ${opts.map(o => `<button class="opt" onclick="chooseFill('${o}','${w.word}',this)">${o}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+      <button class="btn btn-red" id="nextBtn" style="display:none;width:100%" onclick="testNext('fill')">ถัดไป →</button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:8px;" onclick="goHome()">🏠 กลับ</button>
+  `;
+}
+
+function chooseFill(val, ans, el) {
+  document.querySelectorAll('.opt').forEach(b => { b.disabled=true; if(b.textContent===ans) b.classList.add('correct'); else if(b===el && val!==ans) b.classList.add('wrong'); });
+  const correct = val === ans;
+  if (correct) testScore++;
+  else testWrong.push(testWords[testIdx]);
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback show ' + (correct?'fb-ok':'fb-no');
+  fb.innerHTML = `<div class="fb-word">${correct?'✓ ถูกต้อง!':'✗ คำตอบที่ถูกคือ: '+ans}</div><div class="fb-thai">${testWords[testIdx].thai}</div><div class="fb-note">💡 ${testWords[testIdx].note||''}</div>`;
+  document.getElementById('nextBtn').style.display='block';
+}
+
+function testNext(mode) {
+  testIdx++;
+  if (mode==='fill') renderFill();
+  else if (mode==='mcq') renderMCQ();
+}
+
+// ============ MCQ MODE ============
+function startMCQMode(words) {
+  testWords = shuffle(words);
+  testIdx=0; testScore=0; testWrong=[];
+  showScreen('s-test');
+  renderMCQ();
+}
+
+function renderMCQ() {
+  if (testIdx >= testWords.length) { renderEnd(); return; }
+  const w = testWords[testIdx];
+  const wrongs = getWrongOpts(w, testWords, 3);
+  const opts = shuffle([{word:w.word,thai:w.thai}, ...wrongs.map(x=>({word:x, thai: testWords.find(t=>t.word===x)?.thai||''}))]);
+  const pct = (testIdx/testWords.length*100).toFixed(0);
+
+  document.getElementById('s-test').innerHTML = `
+    <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="sb-n">${testIdx+1}/${testWords.length}</div><div class="sb-l">ข้อ</div></div>
+      <div class="stat-box"><div class="sb-n" style="color:#5dde5d">${testScore}</div><div class="sb-l">ถูก</div></div>
+      <div class="stat-box"><div class="sb-n" style="color:#e94560">${testIdx-testScore}</div><div class="sb-l">ผิด</div></div>
+    </div>
+    <div class="q-card">
+      <div class="q-group">${w.group}</div>
+      <div style="font-size:13px;color:#888;margin-bottom:6px;">คำภาษาไทยคือ:</div>
+      <div style="font-size:22px;font-weight:800;color:#f5a623;margin-bottom:16px;">${w.thai}</div>
+      <div class="opts-grid">
+        ${opts.map(o => `<button class="opt" onclick="chooseMCQ('${o.word}','${w.word}',this)">${o.word}</button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+      <button class="btn btn-red" id="nextBtn" style="display:none;width:100%" onclick="testNext('mcq')">ถัดไป →</button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:8px;" onclick="goHome()">🏠 กลับ</button>
+  `;
+}
+
+function chooseMCQ(val, ans, el) {
+  document.querySelectorAll('.opt').forEach(b => { b.disabled=true; if(b.textContent===ans) b.classList.add('correct'); else if(b===el&&val!==ans) b.classList.add('wrong'); });
+  const correct = val===ans;
+  if(correct) testScore++; else testWrong.push(testWords[testIdx]);
+  const fb=document.getElementById('fb');
+  fb.className='feedback show '+(correct?'fb-ok':'fb-no');
+  fb.innerHTML=`<div class="fb-word">${correct?'✓ ถูกต้อง!':'✗ คำตอบที่ถูกคือ: '+ans}</div><div class="fb-note">💡 ${testWords[testIdx].note||''}</div>`;
+  document.getElementById('nextBtn').style.display='block';
+}
+
+// ============ FLASHCARD ============
+function startFlashMode(words) {
+  fcWords = shuffle(words);
+  fcIdx=0; fcFlipped=false;
+  showScreen('s-test');
+  renderFlash();
+}
+
+function renderFlash() {
+  if (fcIdx >= fcWords.length) { renderFlashEnd(); return; }
+  const w = fcWords[fcIdx];
+  document.getElementById('s-test').innerHTML = `
+    <div style="font-size:13px;color:#888;margin-bottom:12px;text-align:center;">${fcIdx+1} / ${fcWords.length} — คลิกการ์ดเพื่อพลิก</div>
+    <div class="flashcard" id="fc" onclick="flipCard()">
+      <div class="fc-front" id="fc-content">
+        <div class="fc-word">${w.word}</div>
+        <div class="fc-pos">${w.pos} | ${w.group}</div>
+      </div>
+      <div class="fc-hint">👆 คลิกเพื่อดูความหมาย</div>
+    </div>
+    <div class="rating-row" id="ratingRow" style="display:none;">
+      <button class="rating-btn rb-hard" onclick="rateCard('hard')">😓 ยาก</button>
+      <button class="rating-btn rb-ok" onclick="rateCard('ok')">🙂 พอได้</button>
+      <button class="rating-btn rb-easy" onclick="rateCard('easy')">😄 ง่าย</button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:8px;" onclick="goHome()">🏠 กลับ</button>
+  `;
+}
+
+function flipCard() {
+  if (fcFlipped) return;
+  fcFlipped = true;
+  const w = fcWords[fcIdx];
+  document.getElementById('fc-content').innerHTML = `
+    <div class="fc-back">
+      <div class="fc-thai">${w.thai}</div>
+      <div class="fc-sent">${w.sentence.replace('___',`<strong>${w.word}</strong>`)}</div>
+      ${w.note?`<div style="font-size:12px;color:#888;margin-top:8px;">💡 ${w.note}</div>`:''}
+    </div>`;
+  document.getElementById('ratingRow').style.display='flex';
+}
+
+function rateCard(r) {
+  if(r==='hard') fcHard.push(fcWords[fcIdx]);
+  else if(r==='ok') fcOk.push(fcWords[fcIdx]);
+  else fcEasy.push(fcWords[fcIdx]);
+  fcIdx++; fcFlipped=false; renderFlash();
+}
+
+function renderFlashEnd() {
+  document.getElementById('s-test').innerHTML = `
+    <div class="end-screen">
+      <div class="end-score">🃏</div>
+      <div class="end-label">ครบทุกคำแล้ว!</div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="sb-n" style="color:#e94560">${fcHard.length}</div><div class="sb-l">😓 ยาก</div></div>
+        <div class="stat-box"><div class="sb-n" style="color:#f5a623">${fcOk.length}</div><div class="sb-l">🙂 พอได้</div></div>
+        <div class="stat-box"><div class="sb-n" style="color:#5dde5d">${fcEasy.length}</div><div class="sb-l">😄 ง่าย</div></div>
+      </div>
+      ${fcHard.length>0?`<button class="btn btn-red" style="width:100%;margin-bottom:8px;" onclick="reStudyHard()">ทบทวนคำยาก (${fcHard.length} คำ)</button>`:''}
+      <button class="btn" style="width:100%;margin-bottom:8px;" onclick="startFlashMode(fcWords)">🔄 เล่นใหม่</button>
+      <button class="btn" style="width:100%;" onclick="goHome()">🏠 กลับ</button>
+    </div>`;
+}
+
+function reStudyHard() { fcWords=shuffle(fcHard); fcIdx=0; fcFlipped=false; fcHard=[]; fcOk=[]; fcEasy=[]; renderFlash(); }
+
+// ============ MATCHING ============
+function startMatchMode(words) {
+  matchWords = shuffle(words).slice(0,6);
+  matchSel=null; matchDone=0;
+  showScreen('s-test');
+  renderMatch();
+}
+
+function renderMatch() {
+  const lefts = shuffle(matchWords.map(w=>({id:w.word,text:w.word,type:'en'})));
+  const rights = shuffle(matchWords.map(w=>({id:w.word,text:w.thai,type:'th'})));
+  let html = `<div style="font-size:13px;color:#888;margin-bottom:12px;">จับคู่คำกับความหมาย</div><div class="match-grid">`;
+  const maxLen = Math.max(lefts.length, rights.length);
+  for(let i=0;i<maxLen;i++){
+    if(lefts[i]) html+=`<div class="match-item" id="ml-${lefts[i].id}" onclick="selectMatch('${lefts[i].id}','en')">${lefts[i].text}</div>`;
+    else html+=`<div></div>`;
+    if(rights[i]) html+=`<div class="match-item" id="mr-${rights[i].id}" onclick="selectMatch('${rights[i].id}','th')">${rights[i].text}</div>`;
+    else html+=`<div></div>`;
+  }
+  html+=`</div><button class="btn" style="width:100%;margin-top:8px;" onclick="goHome()">🏠 กลับ</button>`;
+  document.getElementById('s-test').innerHTML=html;
+}
+
+let matchSelId=null, matchSelType=null;
+function selectMatch(id,type) {
+  const el=document.getElementById(type==='en'?`ml-${id}`:`mr-${id}`);
+  if(el.classList.contains('matched')) return;
+
+  if(matchSelId===null){
+    matchSelId=id; matchSelType=type;
+    el.classList.add('selected');
+  } else {
+    const prevEl=document.getElementById(matchSelType==='en'?`ml-${matchSelId}`:`mr-${matchSelId}`);
+    if(matchSelType!==type && matchSelId===id){
+      // Match!
+      el.classList.remove('selected'); el.classList.add('matched');
+      prevEl.classList.remove('selected'); prevEl.classList.add('matched');
+      matchDone++;
+      if(matchDone>=matchWords.length){ setTimeout(()=>{ document.getElementById('s-test').innerHTML=`<div class="end-screen"><div class="end-score">🎉</div><div class="end-label">จับคู่ครบทุกคำ!</div><button class="btn btn-red" style="width:100%;margin-bottom:8px;" onclick="startMatchMode(getSelectedWords())">🔄 เล่นใหม่</button><button class="btn" style="width:100%;" onclick="goHome()">🏠 กลับ</button></div>`;},300); }
+    } else {
+      // Wrong
+      el.classList.add('wrong-flash'); prevEl.classList.add('wrong-flash');
+      setTimeout(()=>{ el.classList.remove('wrong-flash','selected'); prevEl.classList.remove('wrong-flash','selected'); },500);
+    }
+    matchSelId=null; matchSelType=null;
+  }
+}
+
+// ============ ORDER MODE ============
+function startOrderMode(words) {
+  const groups = getGroups().filter(g => selGroups.includes(g.gid) && g.words.length >= 2);
+  if(groups.length===0){ alert('ต้องเลือกหมวดที่มีคำซ้อนระดับความแรง'); return; }
+  const g = groups[Math.floor(Math.random()*groups.length)];
+  const sorted = [...g.words].sort((a,b)=>a.level-b.level);
+  const shuffledItems = shuffle(sorted.map((w,i)=>({...w, correctPos:i})));
+  showScreen('s-test');
+  renderOrder(shuffledItems, sorted);
+}
+
+function renderOrder(items, sorted) {
+  let html=`<div style="font-size:13px;color:#888;margin-bottom:12px;">ลากเรียงคำจากความรู้สึกเบาสุด → แรงสุด</div><div class="order-items" id="orderList">`;
+  items.forEach((w,i)=>{
+    html+=`<div class="order-item" draggable="true" id="oi-${i}" data-idx="${i}">
+      <div class="order-num">${i+1}</div>
+      <div><div style="font-weight:700">${w.word}</div><div style="font-size:12px;color:#888">${w.thai}</div></div>
+    </div>`;
+  });
+  html+=`</div><button class="check-btn" onclick="checkOrder()">✓ ตรวจคำตอบ</button>`;
+  html+=`<div id="orderFb" style="display:none;"></div>`;
+  html+=`<button class="btn" style="width:100%;margin-top:8px;" onclick="goHome()">🏠 กลับ</button>`;
+  document.getElementById('s-test').innerHTML=html;
+  window._orderCorrect=sorted;
+  window._orderItems=items;
+  initDrag();
+}
+
+function initDrag(){
+  let dragSrc=null;
+  document.querySelectorAll('.order-item').forEach(el=>{
+    el.addEventListener('dragstart',function(){dragSrc=this;this.classList.add('dragging');});
+    el.addEventListener('dragend',function(){this.classList.remove('dragging');});
+    el.addEventListener('dragover',function(e){e.preventDefault();});
+    el.addEventListener('drop',function(e){
+      e.preventDefault();
+      if(dragSrc!==this){
+        const list=document.getElementById('orderList');
+        const items=[...list.children];
+        const srcIdx=items.indexOf(dragSrc);
+        const dstIdx=items.indexOf(this);
+        if(srcIdx<dstIdx) list.insertBefore(dragSrc,this.nextSibling);
+        else list.insertBefore(dragSrc,this);
+      }
+    });
+  });
+}
+
+function checkOrder(){
+  const list=document.getElementById('orderList');
+  const currentOrder=[...list.children].map(el=>el.id.replace('oi-',''));
+  const correct=window._orderCorrect;
+  const items=window._orderItems;
+  let allCorrect=true;
+  [...list.children].forEach((el,i)=>{
+    const w=items[parseInt(el.dataset.idx)];
+    if(w.word===correct[i].word){ el.classList.add('correct-pos'); }
+    else { el.classList.add('wrong-pos'); allCorrect=false; }
+  });
+  const fb=document.getElementById('orderFb');
+  fb.style.display='block';
+  fb.innerHTML=allCorrect?
+    `<div style="background:#1a3a1a;border-radius:10px;padding:12px;color:#5dde5d;font-weight:700;">✓ ถูกต้องทั้งหมด!</div>`:
+    `<div style="background:#3a1a1a;border-radius:10px;padding:12px;color:#eee;">คำเรียงที่ถูก: ${correct.map(w=>`<strong>${w.word}</strong>`).join(' → ')}</div>`;
+}
+
+// ============ END SCREEN ============
+function renderEnd(){
+  const pct=Math.round(testScore/testWords.length*100);
+  let html=`<div class="end-screen">
+    <div class="end-score">${testScore}/${testWords.length}</div>
+    <div class="end-label">${pct}% — ${pct>=80?'ยอดเยี่ยม! 🎉':pct>=60?'ดีมาก! 👍':'ทบทวนอีกนะครับ 💪'}</div>
+    <button class="btn btn-red" style="width:100%;margin-bottom:8px;" onclick="retryWrong()">ทบทวนคำที่ผิด (${testWrong.length} คำ)</button>
+    <button class="btn" style="width:100%;margin-bottom:8px;" onclick="goHome()">🏠 กลับหน้าหลัก</button>`;
+  if(testWrong.length>0){
+    html+=`<div class="wrong-review"><div class="wr-title">📋 คำที่ต้องทบทวน</div>`;
+    testWrong.forEach(w=>{
+      html+=`<div class="wr-item"><div class="wr-word">${w.word} (${w.pos})</div><div class="wr-thai">${w.thai}</div><div class="wr-note">${w.note||''}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  document.getElementById('s-test').innerHTML=html;
+}
+
+function retryWrong(){
+  if(testWrong.length===0) return;
+  testWords=shuffle(testWrong); testIdx=0; testScore=0; testWrong=[];
+  if(selMode==='fill') renderFill();
+  else if(selMode==='mcq') renderMCQ();
+}
+
+function showTestMenu(){ goHome(); }
+
+// ============ INIT ============
+buildHome();
+</script>
+</body>
+</html>
